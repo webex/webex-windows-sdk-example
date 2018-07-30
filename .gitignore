@@ -1,0 +1,10 @@
+
+
+# generated files
+obj/
+binary/
+Debug/
+Release/
+*.obj
+.vs
+packages

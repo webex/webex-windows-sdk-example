@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="KitchenSink.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KitchenSink"
+        mc:Ignorable="d"
+        d:DesignHeight="850" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <local:MainViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/Styles.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Margin="10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0" >
+                <StackPanel>
+                    <Button Content="Video/Audio setup" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding VedioAudioSetupCMD}"/>
+                    <Button Content="Message" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding MessageCMD}"/>
+                    <Button Content="Initiate call" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding InitialCallCMD}"/>
+                    <Button Content="Waiting call" Width="150"  Margin="0,2" FontSize="13" Padding="8" Command="{Binding WaitingCallCMD}"/>
+                    <Button Content="Manage room" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding ManageRoomCMD}"/>
+                    <Button Content="Send feedback" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding SendFeedBackCMD}"/>
+                    <Button Content="Logout" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding LogoutCMD}"/>
+                </StackPanel>
+            </DockPanel>
+            <Border Name="rightArea" Grid.Column="1" Padding="10,2,10,5"></Border>
+        </Grid>
+    </Border>
+
+</UserControl>

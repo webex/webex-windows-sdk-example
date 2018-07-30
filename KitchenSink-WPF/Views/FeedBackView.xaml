@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="KitchenSink.FeedBackView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KitchenSink"
+             xmlns:sys ="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="840">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <local:FeedBackViewModel/>
+    </UserControl.DataContext>
+    <Border BorderThickness="1" BorderBrush="#FF0099CC" Background="Transparent" >
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock   Text="To:" HorizontalAlignment="Right"    />
+            <TextBlock Grid.Column="2" Name="tbReceiver"  Text="{Binding Path=Recipient}" FontWeight="Normal" />
+            <TextBlock  Grid.Row="1" Text="Subject:" HorizontalAlignment="Right" />
+            <ComboBox Name="cbTopic" Grid.Row="1" Grid.Column="1" Margin="5" Width="200" Height="30" HorizontalAlignment="Left" SelectedItem="{Binding Path=SelectedSubject}" >
+                <ComboBox.Items>
+                    <sys:String>UI</sys:String>
+                    <sys:String>SDK</sys:String>
+                    <sys:String>Supported devices</sys:String>
+                    <sys:String>Feature request</sys:String>
+                </ComboBox.Items>
+            </ComboBox>
+            <Border VerticalAlignment="Center" Grid.Row="2"  Height="30">
+                <TextBlock Text="Snapshot:"  HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel Grid.Row="2" Grid.Column="2"  Orientation="Horizontal" >
+                <Border VerticalAlignment="Center" Height="30">
+                    <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=FilesAttached}" FontWeight="Normal" Width="90"/>
+                </Border>
+                <Button  Name="btnBrowse" Content="Browse..." Height="30"  Width="100"  Command="{Binding Path=AttachFileCMD}"/>
+            </StackPanel>
+            <TextBlock Grid.Row="3"  Text="Comment:" HorizontalAlignment="Right"/>
+            <TextBox Grid.Row="3"  Grid.Column="2" TextWrapping="Wrap" MinHeight="150" Margin="5" Text="{Binding Path=Comment}"/>
+            <Button Grid.Row="4" Height="30" Grid.ColumnSpan="2" Name="btnSend" Width="100" HorizontalAlignment="Center" Content="Send" Margin="5" Command="{Binding Path=SendCMD}"/>
+        </Grid>
+    </Border>
+</UserControl>

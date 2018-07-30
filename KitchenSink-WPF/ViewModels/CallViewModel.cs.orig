@@ -1,0 +1,803 @@
+﻿using SparkSDK;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace KitchenSink
+{
+    class CallViewModel : ViewModelBase
+    {
+        #region Fields
+
+        SparkSDK.SPARK spark;
+        SparkSDK.Call currentCall
+        {
+            get
+            {
+               
+                return ApplicationController.Instance.CurSparkManager.currentCall;
+            }
+            set
+            {
+                ApplicationController.Instance.CurSparkManager.currentCall = value;
+            }
+        }
+        CallView curCallView;
+
+        #endregion
+
+        #region Properties
+
+        public RelayCommand BackCommand { get; set; }
+        public RelayCommand EndCallCMD { get; set; }
+
+        private double aspectRatioLocalVedio = 16.0 / 9.0;
+        public double AspectRatioLocalVedio
+        {
+            get
+            {
+                return aspectRatioLocalVedio;
+            }
+            set
+            {
+                if(value != aspectRatioLocalVedio)
+                {
+                    aspectRatioLocalVedio = value;
+                    OnPropertyChanged("AspectRatioLocalVedio");
+                }
+            }
+        }
+
+        private double aspectRatioRemoteVedio = 16.0 / 9.0;
+        public double AspectRatioRemoteVedio
+        {
+            get
+            {
+                return aspectRatioRemoteVedio;
+            }
+            set
+            {
+                if (value != aspectRatioRemoteVedio)
+                {
+                    aspectRatioRemoteVedio = value;
+<<<<<<< HEAD
+                    OnPropertyChanged("AspectRatioRemoteVedio");
+=======
+                    OnPropertyChanged("AspectRatioLocalVedio");
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+                }
+            }
+        }
+
+        private double aspectRatioShareVedio = 16.0 / 9.0;
+        public double AspectShareScreenVideo
+        {
+            get
+            {
+                return aspectRatioShareVedio;
+            }
+            set
+            {
+                if (value != aspectRatioShareVedio)
+                {
+                    aspectRatioShareVedio = value;
+<<<<<<< HEAD
+                    OnPropertyChanged("AspectShareScreenVideo");
+=======
+                    OnPropertyChanged("AspectRatioLocalVedio");
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+                }
+            }
+        }
+
+        public bool IfSendAudio
+        {
+            get
+            {
+                if (this.currentCall != null)
+                {
+                    return this.currentCall.sendingAudio;
+                }
+                return false;
+            }
+            set
+            {
+                if (this.currentCall != null && value != this.currentCall.sendingAudio)
+                {
+                    this.currentCall.sendingAudio = value;
+                    OnPropertyChanged("IfSendAudio");
+                }
+            }
+        }
+
+        public bool IfSendVedio
+        {
+            get
+            {
+                if (this.currentCall != null)
+                {
+                    return this.currentCall.sendingVideo;
+                }
+                return false;
+            }
+            set
+            {
+                if (this.currentCall != null && value != this.currentCall.sendingVideo)
+                {
+                    this.currentCall.sendingVideo = value;
+                    OnPropertyChanged("IfSendVedio");
+                }                
+            }
+        }
+
+        public bool IfReceiveVedio
+        {
+            get
+            {
+                if (this.currentCall != null)
+                {
+                    return this.currentCall.receivingVideo;
+                }
+                return false;
+            }
+            set
+            {
+                if (this.currentCall != null && value != this.currentCall.receivingVideo)
+                {
+                    this.currentCall.receivingVideo = value;
+                    OnPropertyChanged("IfReceiveVedio");
+                }
+            }
+        }
+
+        public bool IfReceiveAudio
+        {
+            get
+            {
+                if (this.currentCall != null)
+                {
+                    return this.currentCall.receivingAudio;
+                }
+                return false;
+            }
+            set
+            {
+                if (this.currentCall != null&&value != this.currentCall.receivingAudio)
+                {
+                    this.currentCall.receivingAudio = value;
+                    OnPropertyChanged("IfReceiveAudio");
+                }
+            }
+        }
+
+        private bool ifShareScreen = false;
+        public bool IfShareSreen
+        {
+            get
+            {
+                return this.ifShareScreen;
+            }
+            set
+            {
+                if (value != ifShareScreen)
+                {
+                    this.ifShareScreen = value;
+                    OnPropertyChanged("IfShareScreen");
+                }
+            }
+        }
+
+<<<<<<< HEAD
+        private bool ifIncludeLog = false;
+        public bool IfIncludeLog
+        {
+            get
+            {
+                return this.ifIncludeLog;
+            }
+            set
+            {
+                this.ifIncludeLog = value;
+                OnPropertyChanged("IfIncludeLog");
+            }
+        }
+=======
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+        public string CallStatus
+        {
+            get
+            {
+                if (this.currentCall != null)
+                {
+                    return "Call Status: " + this.currentCall.status.ToString();
+                }
+                return null;
+            }
+        }
+
+        private string eventInfo;
+        public string EventInfo
+        {
+            get
+            {
+                return this.eventInfo;
+            }
+            set
+            {
+                this.eventInfo = value;
+                OnPropertyChanged("EventInfo");
+            }
+        }
+
+        #region Rating
+
+        public RelayCommand HideRatingViewCMD { get; set; }
+        public RelayCommand SendFeedBackCMD { get; set; }
+
+        private int ratingValue = int.MinValue;
+        public int RatingValue
+        {
+            get {
+                return this.ratingValue;
+            }
+            set
+            {
+                if (value != this.ratingValue)
+                {
+                    this.ratingValue = value;
+                    OnPropertyChanged("RatingValue");
+                }
+            }
+        }
+
+        private string comment = string.Empty;
+
+        public string Comment
+        {
+            get
+            {
+                return this.comment;
+            }
+            set
+            {
+                if (value != this.comment)
+                {
+                    this.comment = value;
+                    OnPropertyChanged("Comment");
+                }
+            }
+        }
+
+        private bool ifShowRatingView = false;
+        public bool IfShowRatingView
+        {
+            get
+            {
+                return this.ifShowRatingView;
+            }
+            set
+            {
+                if (value != ifShowRatingView)
+                {
+                    this.ifShowRatingView = value;
+                    OnPropertyChanged("IfShowRatingView");
+                }
+            }
+        }
+        #endregion
+<<<<<<< HEAD
+=======
+
+        #region License
+
+        public RelayCommand ActivateCMD { get; set; }
+        public RelayCommand CancelCMD { get; set; }
+
+        private bool ifShowLicenseLayer = false;
+        public bool IfShowLicenseLayer
+        {
+            get
+            {
+                return ifShowLicenseLayer;
+            }
+            set
+            {
+                if (value != ifShowLicenseLayer)
+                {
+                    this.ifShowLicenseLayer = value;
+                    OnPropertyChanged("IfShowLicenseLayer");
+                }
+            }
+        }
+
+        #endregion
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+
+        #endregion
+
+        private void RefreshAudioVideoCtrlView()
+        {
+            OnPropertyChanged("IfSendAudio");
+            OnPropertyChanged("IfSendVedio");
+            OnPropertyChanged("IfReceiveVedio");
+            OnPropertyChanged("IfReceiveAudio");
+        }
+        private void RefreshCallStatusView()
+        {
+            OnPropertyChanged("CallStatus");
+        }
+
+        public CallViewModel(CallView callView)
+        {
+            curCallView = callView;
+            EndCallCMD = new RelayCommand(EndCall);
+<<<<<<< HEAD
+            BackCommand = new RelayCommand(BackToMain);
+            HideRatingViewCMD = new RelayCommand(HideRatingView);
+            SendFeedBackCMD = new RelayCommand(this.SendFeedBack,this.CanSendFeedBack);
+            spark = ApplicationController.Instance.CurSparkManager.CurSpark;
+=======
+            HideRatingViewCMD = new RelayCommand(HideRatingView);
+            SendFeedBackCMD = new RelayCommand(this.SendFeedBack,this.CanSendFeedBack);
+            spark = ApplicationController.Instance.CurSparkManager.CurSpark;
+
+            ActivateCMD = new RelayCommand(Activate);
+            CancelCMD = new RelayCommand(Cancel);
+
+            spark.phone.onRequestVideoCodecActivation += Phone_onRequestVideoCodecActivation;
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+        }
+
+        public void Dial(string calleeAddress)
+        {
+            spark?.phone.dial(calleeAddress, MediaOption.audioVideoShare(curCallView.LocalViewHandle, curCallView.RemoteViewHandle, curCallView.RemoteShareViewHandle), result =>
+            {
+                if (result.Success)
+                {
+                    currentCall = (SparkSDK.Call)result.Data;
+                    RegisterCallEvent();
+                    this.curCallView.RefreshViews();
+                }
+                else
+                {
+                    output($"Error: {result.Error?.errorCode.ToString()} {result.Error?.reason}");
+                }
+            });
+        }
+
+        public void Answer()
+        {
+            if (currentCall == null)
+            {
+                return;
+            }
+            RegisterCallEvent();
+            currentCall.answer(MediaOption.audioVideo(curCallView.LocalViewHandle, curCallView.RemoteViewHandle), result =>
+            {
+                if (!result.Success)
+                {
+                    output($"Error: {result.Error?.errorCode.ToString()} {result.Error?.reason}");
+                }
+            });
+        }
+        public void Reject()
+        {
+            if (currentCall == null)
+            {
+                return;
+            }
+            RegisterCallEvent();
+            currentCall.reject(result =>
+            {
+                if (!result.Success)
+                {
+                    output($"Error: {result.Error?.errorCode.ToString()} {result.Error?.reason}");
+                }
+            });
+        }
+		#region CallEvents
+
+        private void Phone_onRequestVideoCodecActivation()
+        {
+            this.IfShowLicenseLayer = true;
+        }
+
+        #region CallEvents 
+
+        private void RegisterCallEvent()
+        {
+            if (currentCall == null)
+            {
+                return;
+            }
+            currentCall.onRinging += CurrentCall_onRinging;
+
+            currentCall.onConnected += CurrentCall_onConnected;
+
+            currentCall.onDisconnected += CurrentCall_onDisconnected;
+
+            currentCall.onMediaChanged += CurrentCall_onMediaChanged;
+
+            currentCall.onCapabilitiesChanged += CurrentCall_onCapabilitiesChanged;
+
+            currentCall.onCallMembershipChanged += CurrentCall_onCallMembershipChanged;
+            
+        }
+
+        private void unRegisterCallEvent()
+        {
+            if (currentCall == null)
+            {
+                return;
+            }
+            currentCall.onRinging -= CurrentCall_onRinging;
+
+            currentCall.onConnected -= CurrentCall_onConnected;
+
+            currentCall.onDisconnected -= CurrentCall_onDisconnected;
+
+            currentCall.onMediaChanged -= CurrentCall_onMediaChanged;
+
+            currentCall.onCapabilitiesChanged -= CurrentCall_onCapabilitiesChanged;
+
+            currentCall.onCallMembershipChanged -= CurrentCall_onCallMembershipChanged;
+        }
+
+        private void CurrentCall_onRinging(SparkSDK.Call call)
+        {
+            RefreshCallStatusView();
+        }
+        private void CurrentCall_onConnected(SparkSDK.Call call)
+        {
+            RefreshCallStatusView();
+        }
+
+        private void CurrentCall_onDisconnected(CallDisconnectedEvent reason)
+        {
+            UpdateRecentContactsStore();
+
+            RefreshCallStatusView();
+            unRegisterCallEvent();
+            output("call is disconnectd for " + reason?.GetType().Name);
+            this.curCallView.RefreshViews();
+            currentCall = null;
+        }
+
+        private void CurrentCall_onCallMembershipChanged(CallMembershipChangedEvent obj)
+        {
+            if (obj is CallMembershipJoinedEvent)
+            {
+                output($"{obj.callMembership.email} joined");
+            }
+            else if (obj is CallMembershipLeftEvent)
+            {
+                output($"{obj.callMembership.email} left");
+            }
+            else if (obj is CallMembershipDeclinedEvent)
+            {
+                output($"{obj.callMembership.email} decline");
+            }
+            else if (obj is CallMembershipSendingAudioEvent)
+            {
+                if (obj.callMembership.sendingAudio)
+                {
+                    output($"{obj.callMembership.email} unmute audio");
+                }
+                else
+                {
+                    output($"{obj.callMembership.email} mute audio");
+                }
+                
+            }
+            else if (obj is CallMembershipSendingVideoEvent)
+            {
+                if (obj.callMembership.sendingVideo)
+                {
+                    output($"{obj.callMembership.email} unmute video");
+                }
+                else
+                {
+                    output($"{obj.callMembership.email} mute video");
+                }
+            }
+            else if (obj is CallMembershipSendingShareEvent)
+            {
+                if (obj.callMembership.sendingVideo)
+                {
+                    output($"{obj.callMembership.email} sending share");
+                }
+                else
+                {
+                    output($"{obj.callMembership.email} stop share");
+                }
+            }
+            else
+            {
+
+            }
+
+
+        }
+
+        private void CurrentCall_onMediaChanged(MediaChangedEvent mediaChgEvent)
+        {
+            RefreshAudioVideoCtrlView();
+
+            if (mediaChgEvent is RemoteVideoReadyEvent)
+            {
+                //if dial API not set view handle, you can set them on these VideoReady events.
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    currentCall.setRemoteView(curCallView.RemoteViewHandle);
+                //});  
+            }
+            else if (mediaChgEvent is LocalVideoReadyEvent)
+            {
+                //if dial API not set view handle, you can set them on these VideoReady events.
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    currentCall.setLocalView(curCallView.LocalViewHandle);
+                //});
+            }
+            else if (mediaChgEvent is LocalVideoViewSizeChangedEvent)
+            {
+                output($"remote video size: width[{mediaChgEvent.call.localVideoViewSize.width}] height[{mediaChgEvent.call.localVideoViewSize.height}]");
+                this.AspectRatioLocalVedio = ((double)mediaChgEvent.call.localVideoViewSize.width) / ((double)mediaChgEvent.call.localVideoViewSize.height);
+            }
+            else if (mediaChgEvent is RemoteVideoViewSizeChangedEvent)
+            {
+                this.AspectRatioRemoteVedio = ((double)mediaChgEvent.call.remoteVideoViewSize.width) / ((double)mediaChgEvent.call.remoteVideoViewSize.height);
+                output($"remote video size: width[{mediaChgEvent.call.remoteVideoViewSize.width}] height[{mediaChgEvent.call.remoteVideoViewSize.height}]");
+            }
+            else if (mediaChgEvent is RemoteShareViewSizeChangedEvent)
+            {
+                this.AspectShareScreenVideo = ((double)mediaChgEvent.call.remoteShareViewSize.width) / ((double)mediaChgEvent.call.remoteShareViewSize.height);
+            }
+            else if (mediaChgEvent is RemoteSendingVideoEvent)
+            {
+                var remoteSendingVideoEvent = mediaChgEvent as RemoteSendingVideoEvent;
+                if (remoteSendingVideoEvent.isSending)
+                {
+                    output("remote unmute video");
+                }
+                else
+                {
+                    output("remote mute video");
+                }
+            }
+            else if (mediaChgEvent is RemoteSendingAudioEvent)
+            {
+                var remoteSendingAudioEvent = mediaChgEvent as RemoteSendingAudioEvent;
+                if (remoteSendingAudioEvent.isSending)
+                {
+                    output("remote unmute audio");
+                }
+                else
+                {
+                    output("remote mute audio");
+                }
+            }
+            else if (mediaChgEvent is RemoteSendingShareEvent)
+            {
+                var remoteSendingShareEvent = mediaChgEvent as RemoteSendingShareEvent;
+                if (remoteSendingShareEvent.isSending)
+                {
+                    output("remote start share");
+
+                    curCallView.SwitchShareViewWithRemoteView(true);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        currentCall.setLocalView((IntPtr)0);
+                        currentCall.setRemoteView((IntPtr)0);
+                        currentCall.setRemoteShareView((IntPtr)0);
+
+                        currentCall.setLocalView(curCallView.LocalViewHandle);
+                        currentCall.setRemoteView(curCallView.RemoteViewHandle);
+                        currentCall.setRemoteShareView(curCallView.RemoteShareViewHandle);
+                    });
+
+
+                }
+                else
+                {
+                    output("remote stop share");
+                    curCallView.SwitchShareViewWithRemoteView(false);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        currentCall.setLocalView((IntPtr)0);
+                        currentCall.setRemoteView((IntPtr)0);
+                        currentCall.setRemoteShareView((IntPtr)0);
+
+                        currentCall.setLocalView(curCallView.LocalViewHandle);
+                        currentCall.setRemoteView(curCallView.RemoteViewHandle);
+                        currentCall.setRemoteShareView(curCallView.RemoteShareViewHandle);
+                    });
+                }
+            }
+            else if (mediaChgEvent is SendingVideoEvent)
+            {
+                var sendingVideoEvent = mediaChgEvent as SendingVideoEvent;
+                if (sendingVideoEvent.isSending)
+                {
+                    output("local unmute video");
+                }
+                else
+                {
+                    output("local mute video");
+                }
+            }
+            else if (mediaChgEvent is SendingAudioEvent)
+            {
+                var sendingAudioEvent = mediaChgEvent as SendingAudioEvent;
+                if (sendingAudioEvent.isSending)
+                {
+                    output("local unmute audio");
+                }
+                else
+                {
+                    output("local mute audio");
+                }
+            }
+            else if (mediaChgEvent is ReceivingVideoEvent)
+            {
+                var receivingVideoEvent = mediaChgEvent as ReceivingVideoEvent;
+                if (receivingVideoEvent.isReceiving)
+                {
+                    output("local restore remote video");
+                }
+                else
+                {
+                    output("local close remote video");
+                }
+            }
+            else if (mediaChgEvent is ReceivingAudioEvent)
+            {
+                var receivingAudioEvent = mediaChgEvent as ReceivingAudioEvent;
+                if (receivingAudioEvent.isReceiving)
+                {
+                    output("local restore remote audio");
+                }
+                else
+                {
+                    output("local close remote audio");
+                }
+            }
+            else if (mediaChgEvent is ReceivingShareEvent)
+            {
+                var receivingShareEvent = mediaChgEvent as ReceivingShareEvent;
+                if (receivingShareEvent.isReceiving)
+                {
+                    output("local restore remote share");
+                }
+                else
+                {
+                    output("local close remote share");
+                }
+            }
+            else if (mediaChgEvent is CameraSwitchedEvent)
+            {
+                var cameraSwitchedEvent = mediaChgEvent as CameraSwitchedEvent;
+                output($"switch camera to {cameraSwitchedEvent.camera.name}");
+            }
+            else if (mediaChgEvent is SpeakerSwitchedEvent)
+            {
+                var speakerSwitchedEvent = mediaChgEvent as SpeakerSwitchedEvent;
+                output($"switch camera to {speakerSwitchedEvent.speaker.name}");
+            }
+            else
+            {
+            }
+        }
+
+        private void CurrentCall_onCapabilitiesChanged(Capabilities capability)
+        {
+            output($"capability change {capability.GetType().Name}");
+        }
+
+        #endregion
+
+        private void output(String format, params object[] args)
+        {
+            EventInfo = string.Format(format, args);
+        }
+
+        private void UpdateRecentContactsStore()
+        {
+            if (currentCall == null
+                || currentCall.to == null
+                || currentCall.from == null)
+            {
+                return;
+            }
+
+            if (currentCall.direction == Call.Direction.outgoing)
+            {
+                ApplicationController.Instance.CurSparkManager?.RecentContacts?.AddRecentContactsStore(currentCall.to.personId);
+            }
+            else
+            {
+                ApplicationController.Instance.CurSparkManager.RecentContacts.AddRecentContactsStore(currentCall.from.personId);
+            }
+        }
+
+        private void EndCall(object o)
+        {
+            this.IfShowRatingView = true;
+            if (this.currentCall != null)
+            {
+                currentCall.hangup(result =>
+                {
+                    if (!result.Success)
+                    {
+
+                    }
+                });
+            }
+<<<<<<< HEAD
+            ApplicationController.Instance.CurCallView = null;
+        }
+
+        private void BackToMain(object o)
+        {
+            ApplicationController.Instance.CurCallView = null;
+            ApplicationController.Instance.ChangeState(State.Main);
+        }
+        #region Rating
+
+        private void HideRatingView(object o)
+        {
+            this.IfShowRatingView = false;
+        }
+
+        private bool CanSendFeedBack(object o)
+        {
+            return !string.IsNullOrEmpty(this.Comment) || this.ratingValue != int.MinValue;
+        }
+        private void SendFeedBack(object o)
+        {
+            this.IfShowRatingView = false;
+            currentCall?.sendFeedbackWith(this.RatingValue, this.Comment, this.IfIncludeLog);
+=======
+            //ApplicationController.Instance.ChangeState(State.Main);
+        }
+        #region Rating
+
+        private void HideRatingView(object o)
+        {
+            this.IfShowRatingView = false;
+        }
+
+        private bool CanSendFeedBack(object o)
+        {
+            return !string.IsNullOrEmpty(this.Comment) || this.ratingValue != int.MinValue;
+        }
+        private void SendFeedBack(object o)
+        {
+            this.IfShowRatingView = false;
+            //to do: send rating to support team.
+            // this.spark.phone.
+        }
+
+        #endregion
+
+        #region License
+
+        private void Activate(object o)
+        {
+            this.IfShowLicenseLayer = false;
+            ApplicationController.Instance.CurSparkManager.CurSpark.phone.activateVideoCodecLicense(true);
+        }
+        private void Cancel(object o)
+        {
+            this.IfShowLicenseLayer = false;
+            ApplicationController.Instance.CurSparkManager.CurSpark.phone.activateVideoCodecLicense(false);
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+        }
+
+        #endregion
+    }
+}

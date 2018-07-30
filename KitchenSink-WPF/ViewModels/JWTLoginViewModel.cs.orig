@@ -1,0 +1,119 @@
+﻿using SparkSDK;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KitchenSink
+{
+    public class JWTLoginViewModel : ViewModelBase
+    {
+        public bool IsAuthenticated { get; set; }
+
+        private bool isBusy = false;
+        public bool IsBusy
+        {
+            get { return this.isBusy; }
+            set
+            {
+                if (value != this.isBusy)
+                {
+                    this.isBusy = value;
+                    OnPropertyChanged("IsBusy");
+                }
+            }
+        }
+        private string eventInfo;
+        public string EventInfo
+        {
+            get
+            {
+                return this.eventInfo;
+            }
+            set
+            {
+                this.eventInfo = value;
+                OnPropertyChanged("EventInfo");
+            }
+        }
+
+        public string errorInfo = string.Empty;
+        public string ErrorInfo
+        {
+            get
+            {
+                return errorInfo;
+            }
+            set
+            {
+                if (value != errorInfo)
+                {
+                    errorInfo = value;
+                    OnPropertyChanged("ErrorInfo");
+                }
+            }
+        }
+
+        public RelayCommand AuthenticateByJWTCMD { get; set; }
+
+        private string jwtStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKd3RUZXN0VXNlckpheWVuIiwibmFtZSI6Ikp3dFRlc3RVc2VySmF5ZW4iLCJpc3MiOiJjZDVjOWFmNy04ZWQzLTRlMTUtOTcwNS0wMjVlZjMwYjFiNmEifQ.J38--YzkAUNmSgg_aSIWRvZlkG4lyyupD1-K-D0Bnsw";
+        public string JwtStr
+        {
+            get
+            {
+                return this.jwtStr;
+            }
+            set
+            {
+                if (value != this.jwtStr)
+                {
+                    this.jwtStr = value;
+                    OnPropertyChanged("JwtStr");
+                }
+            }
+        }
+
+        public JWTLoginViewModel()
+        {
+            this.AuthenticateByJWTCMD = new RelayCommand(this.AuthenticateByJWT, CanAuthenticateByJWT);
+        }
+
+        void AuthenticateByJWT(object o)
+        {
+            this.IsBusy = true;
+            JWTAuthenticator auth = ApplicationController.Instance.CurSparkManager.CurSpark.authenticator as JWTAuthenticator;
+
+            auth?.authorizeWith(this.jwtStr, result =>
+            {
+                this.IsBusy = false;
+                if (result.Success)
+                {
+                    output("authorize success!");
+                    ApplicationController.Instance.ChangeState(State.Main);
+                }
+                else
+                {
+<<<<<<< HEAD
+                    output("authorize failed!");
+=======
+                    this.ErrorInfo = $"Error: {result.Error?.errorCode.ToString()} {result.Error?.reason}";
+>>>>>>> e029ef1b2b04041796d3bf9793bff1952a9584e1
+                }
+            });
+
+        }
+
+        bool CanAuthenticateByJWT(object ignore)
+        {
+            return !string.IsNullOrEmpty(this.JwtStr);
+        }
+
+        private void output(String format, params object[] args)
+        {
+            EventInfo = string.Format(format, args);
+        }
+
+    }
+}
