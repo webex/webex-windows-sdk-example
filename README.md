@@ -18,7 +18,7 @@ This application is built with **Vistual Studio 2017** and requires:
 3. Run KitchenSink.exe.
 
 ## Install
-1. You can get the installer of this application. [Get the current release](https://github.com/ciscowebex/webex-windows-sdk-example/releases)
+1. You can get the installer of this application. [Get the current release](https://github.com/webex/webex-windows-sdk-example/releases)
 2. setup.exe is the installer program, you can run it and install it by construction.
 
 
@@ -41,4 +41,4 @@ This feature demonstrate add/delete a room, and add/delte/list room memberships.
 
 &copy; 2016-2018 Cisco Systems, Inc. and/or its affiliates. All Rights Reserved.
 
-See [LICENSE](https://github.com/ciscowebex/webex-windows-sdk-example/blob/master/LICENSE) for details.
+See [LICENSE](https://github.com/webex/webex-windows-sdk-example/blob/master/LICENSE) for details.
