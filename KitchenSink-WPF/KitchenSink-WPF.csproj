@@ -130,7 +130,7 @@
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\OAuthLoginViewModel.cs" />
     <Compile Include="ViewModels\PreLoginViewModel.cs" />
-    <Compile Include="ViewModels\RoomManageViewModel.cs" />
+    <Compile Include="ViewModels\SpaceManageViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\VideoAudioSetupViewModel.cs" />
     <Compile Include="ViewModels\VideoCodecLicenseViewModel.cs" />
@@ -164,8 +164,8 @@
       <DependentUpon>PreLoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RatingCellControl.xaml.cs" />
-    <Compile Include="Views\RoomManageView.xaml.cs">
-      <DependentUpon>RoomManageView.xaml</DependentUpon>
+    <Compile Include="Views\SpaceManageView.xaml.cs">
+      <DependentUpon>SpaceManageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VideoAudioSetupView.xaml.cs">
       <DependentUpon>VideoAudioSetupView.xaml</DependentUpon>
@@ -232,7 +232,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RoomManageView.xaml">
+    <Page Include="Views\SpaceManageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

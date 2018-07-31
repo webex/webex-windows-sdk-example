@@ -63,33 +63,33 @@ namespace KitchenSink
             }
         }
 
-        private List<Room> roomList;
-        public List<Room> RoomList
+        private List<Space> spaceList;
+        public List<Space> SpaceList
         {
             get
             {
-                return this.roomList;
+                return this.spaceList;
             }
             set
             {
-                this.roomList = value;
-                OnPropertyChanged("RoomList");
+                this.spaceList = value;
+                OnPropertyChanged("SpaceList");
             }
         }
 
-        private Room selectedRoom;
-        public Room SelectedRoom
+        private Space selectedSpace;
+        public Space SelectedSpace
         {
             get
             {
-                return this.selectedRoom;
+                return this.selectedSpace;
             }
             set
             {
-                this.selectedRoom = value;
-                if (SelectedRoom != null)
+                this.selectedSpace = value;
+                if (selectedSpace != null)
                 {
-                    ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedRoom.Id;
+                    ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedSpace.Id;
                     ApplicationController.Instance.ChangeViewCmd = ChangeViewCmd.CallViewDial;
                     ApplicationController.Instance.ChangeState(State.Call);
 
@@ -145,15 +145,15 @@ namespace KitchenSink
             }
         }
 
-        private void FetchRooms()
+        private void FetchSpaces()
         {
             var webex = ApplicationController.Instance.CurWebexManager.CurWebex;
 
-            webex?.Rooms?.List(null, null, RoomType.Group, RoomSortType.ByLastActivity, r =>
+            webex?.Spaces?.List(null, null, SpaceType.Group, SpaceSortType.ByLastActivity, r =>
             {
                 if (r.IsSuccess)
                 {
-                    RoomList = new List<Room>((IList<Room>)r.Data);
+                    SpaceList = new List<Space>((IList<Space>)r.Data);
                 }
             });
         }
@@ -198,7 +198,7 @@ namespace KitchenSink
         public InitiateCallViewModel()
         {
             CallCMD = new RelayCommand(BeginCall, CanCall);
-            FetchRooms();
+            FetchSpaces();
             FetchRecentContacts();
         }
 

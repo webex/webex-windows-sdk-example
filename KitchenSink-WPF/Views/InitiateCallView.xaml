@@ -101,14 +101,14 @@
                     </Button>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tabRooms" Header="rooms">
+            <TabItem x:Name="tabSpaces" Header="spaces">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="19*"/>
                         <ColumnDefinition Width="16*"/>
                     </Grid.ColumnDefinitions>
 
-                    <ListView x:Name="roomListView" Margin="10,0" ItemsSource="{Binding RoomList}" SelectedItem="{Binding SelectedRoom}" Grid.ColumnSpan="2">
+                    <ListView x:Name="spaceListView" Margin="10,0" ItemsSource="{Binding SpaceList}" SelectedItem="{Binding SelectedSpace}" Grid.ColumnSpan="2">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Margin="10" Text="{Binding Title}" TextAlignment="Center" HorizontalAlignment="Center"/>

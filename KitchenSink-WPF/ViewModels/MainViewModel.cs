@@ -38,7 +38,7 @@ namespace KitchenSink
         public RelayCommand CallCMD { get; set; }
         public RelayCommand SendFeedBackCMD { get; set; }
         public RelayCommand WaitingCallCMD { get; set; }
-        public RelayCommand ManageRoomCMD { get; set; }
+        public RelayCommand ManageSpaceCMD { get; set; }
         public RelayCommand MessageCMD { get; set; }
 
 
@@ -51,7 +51,7 @@ namespace KitchenSink
             InitialCallCMD = new RelayCommand(InitialCall, IfNotInCall);
             SendFeedBackCMD = new RelayCommand(SendFeedBack, IfNotInCall);
             WaitingCallCMD = new RelayCommand(WaitingCall, IfNotInCall);
-            ManageRoomCMD = new RelayCommand(ManageRoom, IfNotInCall);
+            ManageSpaceCMD = new RelayCommand(ManageSpace, IfNotInCall);
             MessageCMD = new RelayCommand(Message, IfNotInCall);
 
             GetUserInfo();
@@ -110,9 +110,9 @@ namespace KitchenSink
             ApplicationController.Instance.ChangeState(State.IntiateCall);
         }
 
-        private void ManageRoom(object o)
+        private void ManageSpace(object o)
         {
-            ApplicationController.Instance.ChangeState(State.ManageRoom);
+            ApplicationController.Instance.ChangeState(State.ManageSpace);
         }
         private void Message(object o)
         {

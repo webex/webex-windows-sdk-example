@@ -30,35 +30,35 @@ using WebexSDK;
 
 namespace KitchenSink
 {
-    public class RoomManageViewModel : ViewModelBase
+    public class SpaceManageViewModel : ViewModelBase
     {
         private Webex webex;
-        public RelayCommand CreateRoomCMD { get; set; }
-        public RelayCommand DeleteRoomCMD { get; set; }
+        public RelayCommand CreateSpaceCMD { get; set; }
+        public RelayCommand DeleteSpaceCMD { get; set; }
         public RelayCommand CreateMembershipCMD { get; set; }
         public RelayCommand DeleteMembershipCMD { get; set; }
 
-        public RoomManageViewModel()
+        public SpaceManageViewModel()
         {
             webex = ApplicationController.Instance.CurWebexManager.CurWebex;
-            CreateRoomCMD = new RelayCommand(CreateRoom);
-            DeleteRoomCMD = new RelayCommand(DeleteRoom);
+            CreateSpaceCMD = new RelayCommand(CreateSpace);
+            DeleteSpaceCMD = new RelayCommand(DeleteSpace);
             CreateMembershipCMD = new RelayCommand(CreateMembership);
             DeleteMembershipCMD = new RelayCommand(DeleteMembership);
-            FetchRooms();
+            FetchSpaces();
         }
 
-        private List<Room> roomList;
-        public List<Room> RoomList
+        private List<Space> spaceList;
+        public List<Space> SpaceList
         {
             get
             {
-                return this.roomList;
+                return this.spaceList;
             }
             set
             {
-                this.roomList = value;
-                OnPropertyChanged("RoomList");
+                this.spaceList = value;
+                OnPropertyChanged("SpaceList");
             }
         }
 
@@ -76,25 +76,25 @@ namespace KitchenSink
             }
         }
 
-        private Room selectedRoom;
-        public Room SelectedRoom
+        private Space selectedSpace;
+        public Space SelectedSpace
         {
             get
             {
-                return this.selectedRoom;
+                return this.selectedSpace;
             }
             set
             {
-                this.selectedRoom = value;
-                if (this.selectedRoom != null)
+                this.selectedSpace = value;
+                if (this.selectedSpace != null)
                 {
 
-                    FetchMemberships(SelectedRoom.Id);
+                    FetchMemberships(SelectedSpace.Id);
                 }
             }
         }
 
-        public string RoomTitle { get; set; }
+        public string SpaceTitle { get; set; }
 
         public Membership SelectedMembership { get; set; }
 
@@ -104,44 +104,44 @@ namespace KitchenSink
 
 
 
-        private void FetchRooms()
+        private void FetchSpaces()
         {
-            webex?.Rooms?.List(null, null, RoomType.Group, RoomSortType.ByLastActivity, r =>
+            webex?.Spaces?.List(null, null, SpaceType.Group, SpaceSortType.ByLastActivity, r =>
             {
                 if (r.IsSuccess)
                 {
-                    RoomList = new List<Room>((IList<Room>)r.Data);
+                    SpaceList = new List<Space>((IList<Space>)r.Data);
                 }
             });
         }
 
-        private void CreateRoom(object o)
+        private void CreateSpace(object o)
         {
-            webex?.Rooms.Create(RoomTitle, null, r =>
+            webex?.Spaces.Create(SpaceTitle, null, r =>
             {
                 if(r.IsSuccess)
                 {
-                    FetchRooms();
+                    FetchSpaces();
                 }
 
             });
         }
 
-        private void DeleteRoom(object o)
+        private void DeleteSpace(object o)
         {
-            webex?.Rooms.Delete(SelectedRoom.Id, r =>
+            webex?.Spaces.Delete(SelectedSpace.Id, r =>
             {
                 if (r.IsSuccess)
                 {
-                    FetchRooms();
+                    FetchSpaces();
                 }
 
             });
         }
 
-        private void FetchMemberships(string roomId)
+        private void FetchMemberships(string spaceId)
         {
-            webex?.Memberships.List(roomId, null, r =>
+            webex?.Memberships.List(spaceId, null, r =>
             {
                 if (r.IsSuccess)
                 {
@@ -157,11 +157,11 @@ namespace KitchenSink
                 if (r.IsSuccess)
                 {
                     var personId = r.Data[0].Id;
-                    webex?.Memberships.CreateByPersonId(SelectedRoom.Id, personId, null, rr =>
+                    webex?.Memberships.CreateByPersonId(SelectedSpace.Id, personId, null, rr =>
                     {
                         if (rr.IsSuccess)
                         {
-                            FetchMemberships(SelectedRoom.Id);
+                            FetchMemberships(SelectedSpace.Id);
                         }
                     });
                 }
@@ -174,7 +174,7 @@ namespace KitchenSink
             {
                 if (r.IsSuccess)
                 {
-                    FetchMemberships(SelectedRoom.Id);
+                    FetchMemberships(SelectedSpace.Id);
                 }
             });
         }

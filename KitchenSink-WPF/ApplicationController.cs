@@ -116,8 +116,8 @@ namespace KitchenSink
                     case State.VideoCodecLicense:
                         this.ShowView(new VideoCodecLicenseView(), WorkSpace.Main);
                         break;
-                    case State.ManageRoom:
-                        this.ShowView(new RoomManageView(), WorkSpace.Right);
+                    case State.ManageSpace:
+                        this.ShowView(new SpaceManageView(), WorkSpace.Right);
                         break;
                     case State.Message:
                         this.ShowView(new MessageView(), WorkSpace.Right);

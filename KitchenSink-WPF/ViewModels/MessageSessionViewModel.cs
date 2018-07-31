@@ -56,7 +56,7 @@ namespace KitchenSink
 
         private bool isDirectMessage = false;
         private string toPersonEmail=null;
-        private string toRoomId = null;
+        private string toSpaceId = null;
 
         private string messageText=null;
         public string MessageText
@@ -143,12 +143,12 @@ namespace KitchenSink
 
         public void FetchMemberships()
         {
-            if (toRoomId == null)
+            if (toSpaceId == null)
             {
                 return;
             }
 
-            webex?.Memberships.List(toRoomId, null, r =>
+            webex?.Memberships.List(toSpaceId, null, r =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -183,17 +183,17 @@ namespace KitchenSink
             }
         }
 
-        private string roomTitle;
-        public string RoomTitle
+        private string spaceTitle;
+        public string SpaceTitle
         {
             get
             {
-                return this.roomTitle;
+                return this.spaceTitle;
             }
             set
             {
-                this.roomTitle = value;
-                OnPropertyChanged("RoomTitle");
+                this.spaceTitle = value;
+                OnPropertyChanged("SpaceTitle");
             }
         }
 
@@ -219,20 +219,20 @@ namespace KitchenSink
             var address = ApplicationController.Instance.CurWebexManager.CurCalleeAddress;
             if (address.Contains('@') || StringExtention.Base64UrlDecode(address).Contains("PEOPLE"))
             {
-                RoomTitle = address;
+                SpaceTitle = address;
                 isDirectMessage = true;
                 toPersonEmail = address;
             }
             else
             {
-                webex?.Rooms.Get(address, r =>
+                webex?.Spaces.Get(address, r =>
                 {
                     if (r.IsSuccess)
                     {
-                        RoomTitle = r.Data.Title;
+                        SpaceTitle = r.Data.Title;
                     }
                 });
-                toRoomId = address;
+                toSpaceId = address;
             }
         }
 
@@ -322,7 +322,7 @@ namespace KitchenSink
                     }
 
                     PrintPayload(msgInfo);
-                    if (msgInfo.RoomType == RoomType.Direct)
+                    if (msgInfo.SpaceType == SpaceType.Direct)
                     {
                         UpdateRecentContactsStore(msgInfo.PersonId);
                     }
@@ -447,7 +447,7 @@ namespace KitchenSink
             }
             else
             {
-                webex?.Messages.PostToRoom(toRoomId, MessageText, Mentions, localFiles, r =>
+                webex?.Messages.PostToSpace(toSpaceId, MessageText, Mentions, localFiles, r =>
                 {
                     if (r.IsSuccess)
                     {
@@ -601,8 +601,8 @@ namespace KitchenSink
                 return;
             }
             to.MessageInfo.Id = from.Id;
-            to.MessageInfo.RoomId = from.RoomId;
-            to.MessageInfo.RoomType = from.RoomType;
+            to.MessageInfo.SpaceId = from.SpaceId;
+            to.MessageInfo.SpaceType = from.SpaceType;
             to.MessageInfo.PersonId = from.PersonId;
             to.MessageInfo.PersonEmail = from.PersonEmail;
             to.MessageInfo.ToPersonId = from.ToPersonId;
@@ -706,7 +706,7 @@ namespace KitchenSink
 
             if (beforeMessage != null)
             {
-                webex?.Messages.List(beforeMessage.RoomId, null, beforeMessage.Id, max, r =>
+                webex?.Messages.List(beforeMessage.SpaceId, null, beforeMessage.Id, max, r =>
                 {
                     if (r.IsSuccess)
                     {

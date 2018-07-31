@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="KitchenSink.RoomManageView"
+﻿<UserControl x:Class="KitchenSink.SpaceManageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DesignHeight="700" d:DesignWidth="840">
     <UserControl.DataContext>
-        <local:RoomManageViewModel/>
+        <local:SpaceManageViewModel/>
     </UserControl.DataContext>
     <UserControl.Resources>
         <ResourceDictionary>
@@ -28,11 +28,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
-            <TextBox Width="150" Margin="10" Height="25" Text="{Binding RoomTitle,UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Content="Add"  Width="60" Command="{Binding Path=CreateRoomCMD}"/>
-            <Button Content="delete"  Width="60" Command="{Binding Path=DeleteRoomCMD}"/>
+            <TextBox Width="150" Margin="10" Height="25" Text="{Binding SpaceTitle,UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Add"  Width="60" Command="{Binding Path=CreateSpaceCMD}"/>
+            <Button Content="delete"  Width="60" Command="{Binding Path=DeleteSpaceCMD}"/>
         </StackPanel>
-        <ListView x:Name="roomListView" Margin="10,0" ItemsSource="{Binding RoomList}" SelectedItem="{Binding SelectedRoom}" Grid.Row="1" Grid.Column="0">
+        <ListView x:Name="spaceListView" Margin="10,0" ItemsSource="{Binding SpaceList}" SelectedItem="{Binding SelectedSpace}" Grid.Row="1" Grid.Column="0">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Margin="10" Text="{Binding Title}" TextAlignment="Center" HorizontalAlignment="Center"/>

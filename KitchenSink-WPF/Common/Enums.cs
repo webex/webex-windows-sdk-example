@@ -51,7 +51,7 @@ namespace KitchenSink
         VideoAudioSetup,
         SendFeedBack,
         VideoCodecLicense,
-        ManageRoom,
+        ManageSpace,
         Message,
         MessageSession
     }

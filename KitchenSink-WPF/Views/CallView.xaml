@@ -139,7 +139,7 @@
         <DockPanel Name="commentLayer"  
                    Background="Azure" 
                    LastChildFill="True" 
-                   HorizontalAlignment="Left" 
+                   HorizontalAlignment="Right" 
                    Height="250" Margin="20,5" 
                    Visibility="{Binding IfShowRatingView, Converter={StaticResource bool2VisibilityConverter}}">
             <TextBlock Text="Please rate this call" Margin="10" Height="18" DockPanel.Dock="Top" TextAlignment="Center"/>
@@ -154,7 +154,7 @@
             </Viewbox>
             <TextBox Name="txtComment" TextWrapping="Wrap" Margin="10" MinHeight="70" VerticalAlignment="Stretch" DockPanel.Dock="Top" Height="Auto" Text="{Binding Path=Comment, UpdateSourceTrigger=LostFocus}" />
         </DockPanel>
-        <Grid DockPanel.Dock="Right" Width="200" Height="250" HorizontalAlignment="Left" VerticalAlignment="Center" Background="Azure" Margin="20" Visibility="{Binding IfShowkeyboard, Converter={StaticResource bool2VisibilityConverter}}">
+        <Grid DockPanel.Dock="Right" Width="200" Height="250" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Azure" Margin="20" Visibility="{Binding IfShowkeyboard, Converter={StaticResource bool2VisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />

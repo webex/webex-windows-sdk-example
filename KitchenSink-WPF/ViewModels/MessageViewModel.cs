@@ -33,7 +33,7 @@ namespace KitchenSink
     public class MessageViewModel : ViewModelBase
     {
         public RelayCommand SendDirectMessageCMD { get; set; }
-        public RelayCommand SendRoomMessageCMD { get; set; }
+        public RelayCommand SendSpaceMessageCMD { get; set; }
 
         public string Callee
         {
@@ -64,33 +64,33 @@ namespace KitchenSink
             }
         }
 
-        private List<Room> roomList;
-        public List<Room> RoomList
+        private List<Space> spaceList;
+        public List<Space> SpaceList
         {
             get
             {
-                return this.roomList;
+                return this.spaceList;
             }
             set
             {
-                this.roomList = value;
-                OnPropertyChanged("RoomList");
+                this.spaceList = value;
+                OnPropertyChanged("SpaceList");
             }
         }
 
-        private Room selectedRoom;
-        public Room SelectedRoom
+        private Space selectedSpace;
+        public Space SelectedSpace
         {
             get
             {
-                return this.selectedRoom;
+                return this.selectedSpace;
             }
             set
             {
-                this.selectedRoom = value;
-                if (this.selectedRoom != null)
+                this.selectedSpace = value;
+                if (this.selectedSpace != null)
                 {
-                    ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedRoom.Id;
+                    ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedSpace.Id;
                     ApplicationController.Instance.ChangeViewCmd = ChangeViewCmd.MessageSessionView;
                     ApplicationController.Instance.ChangeState(State.MessageSession);
 
@@ -146,15 +146,15 @@ namespace KitchenSink
             }
         }
 
-        private void FetchRooms()
+        private void FetchSpaces()
         {
             var webex = ApplicationController.Instance.CurWebexManager.CurWebex;
 
-            webex?.Rooms?.List(null, null, RoomType.Group, RoomSortType.ByLastActivity, r =>
+            webex?.Spaces?.List(null, null, SpaceType.Group, SpaceSortType.ByLastActivity, r =>
             {
                 if (r.IsSuccess)
                 {
-                    RoomList = new List<Room>((IList<Room>)r.Data);
+                    SpaceList = new List<Space>((IList<Space>)r.Data);
                 }
             });
         }
@@ -199,8 +199,8 @@ namespace KitchenSink
         public MessageViewModel()
         {
             SendDirectMessageCMD = new RelayCommand(SendDirectMessage, CanMessage);
-            SendRoomMessageCMD = new RelayCommand(SendRoomMessage);
-            FetchRooms();
+            SendSpaceMessageCMD = new RelayCommand(SendSpaceMessage);
+            FetchSpaces();
             FetchRecentContacts();
         }
 
@@ -216,11 +216,11 @@ namespace KitchenSink
         }
 
 
-        private void SendRoomMessage(object o)
+        private void SendSpaceMessage(object o)
         {
-            if (SelectedRoom != null)
+            if (SelectedSpace != null)
             {
-                ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedRoom.Id;
+                ApplicationController.Instance.CurWebexManager.CurCalleeAddress = this.selectedSpace.Id;
                 ApplicationController.Instance.ChangeViewCmd = ChangeViewCmd.MessageSessionView;
                 ApplicationController.Instance.ChangeState(State.MessageSession);
 

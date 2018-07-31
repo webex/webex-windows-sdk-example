@@ -28,7 +28,7 @@
                     <Button Content="Message" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding MessageCMD}"/>
                     <Button Content="Initiate call" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding InitialCallCMD}"/>
                     <Button Content="Waiting call" Width="150"  Margin="0,2" FontSize="13" Padding="8" Command="{Binding WaitingCallCMD}"/>
-                    <Button Content="Manage room" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding ManageRoomCMD}"/>
+                    <Button Content="Manage space" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding ManageSpaceCMD}"/>
                     <Button Content="Send feedback" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding SendFeedBackCMD}"/>
                     <Button Content="Logout" Width="150" Margin="0,2" FontSize="13" Padding="8" Command="{Binding LogoutCMD}"/>
                 </StackPanel>

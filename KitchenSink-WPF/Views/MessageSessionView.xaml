@@ -22,7 +22,7 @@
         <DockPanel LastChildFill="True">
             <DockPanel LastChildFill="True" DockPanel.Dock="Top" Height="20" VerticalAlignment="Top">
                 <Button DockPanel.Dock="Left" x:Name="Back"  Content="Back" Grid.Row="0" Width="50" Height="20" HorizontalAlignment="Left" Command="{Binding BackCommand}" />
-                <TextBlock Text="{Binding RoomTitle}" TextAlignment="Left"  Padding="150,0" FontSize="15"/>
+                <TextBlock Text="{Binding SpaceTitle}" TextAlignment="Left"  Padding="150,0" FontSize="15"/>
                 <TextBlock Text="Message Metadata" Padding="120,0" TextAlignment="Right"  FontSize="15"/>
             </DockPanel>
             <TextBox DockPanel.Dock="Right" Width="350" Margin="10,0,10,0" IsReadOnly="True" Text="{Binding PayLoad}" TextWrapping="Wrap"/>
