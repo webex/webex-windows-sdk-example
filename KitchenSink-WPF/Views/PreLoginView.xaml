@@ -27,7 +27,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <Image  Height="80" Source="/KitchenSink;component/Resources/SparkLogo.png" />
+                <Image  Height="80" Source="/KitchenSink;component/Resources/logo.png" />
                 <TextBlock Text="Kitchen Sink" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FF0099CC" FontSize="20"/>
             </StackPanel>
             <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="1">
