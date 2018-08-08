@@ -937,14 +937,22 @@ namespace KitchenSink
                 foreach (var handle in remoteAuxVideo.HandleList)
                 {
                     var find = RemoteAuxVideoViews.Where(x => x.Handle == handle).First();
-                    ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(remoteAuxVideo.Person.PersonId, r =>
+                    if (remoteAuxVideo.Person != null)
                     {
-                        if (r.IsSuccess)
+                        ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(remoteAuxVideo.Person.PersonId, r =>
                         {
-                            find.PersonName = r.Data.DisplayName;
-                        }
-                    });
-                    output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged.RemoteAuxVideo.Person.Email}");
+                            if (r.IsSuccess)
+                            {
+                                find.PersonName = r.Data.DisplayName;
+                            }
+                        });
+                        output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged.RemoteAuxVideo.Person.Email}");
+                    }
+                    else
+                    {
+                        find.IsShow = false;
+                        output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to no person");
+                    }
                 }
             }
             else if (mediaChgEvent is ActiveSpeakerChangedEvent)
