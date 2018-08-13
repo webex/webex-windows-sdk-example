@@ -294,7 +294,7 @@ namespace KitchenSink
 
         }
 
-        private void combShareSourceList_DropDownOpened(object sender, EventArgs e)
+        private void CombShareSourceList_DropDownOpened(object sender, EventArgs e)
         {
             var viewModel = this.DataContext as CallViewModel;
             if (viewModel == null)

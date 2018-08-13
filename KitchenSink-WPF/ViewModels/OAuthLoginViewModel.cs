@@ -46,10 +46,10 @@ namespace KitchenSink
                 OAuthAuthenticator auth = ApplicationController.Instance.CurWebexManager.CurAuthenticator as OAuthAuthenticator;
                 if (auth != null)
                 {
-                    output($"AuthorizationUrl: {auth.AuthorizationUrl}");
+                    Output($"AuthorizationUrl: {auth.AuthorizationUrl}");
                     return auth.AuthorizationUrl;
                 }
-                output($"Get AuthorizationUrl failed. OAuth authenticator is null.");
+                Output($"Get AuthorizationUrl failed. OAuth authenticator is null.");
                 return "";
             }
         }
@@ -93,19 +93,19 @@ namespace KitchenSink
             GettingAuthCode = false;
             IsBusy = true;
 
-            output($"begin to authorize with auth code.");
+            Output($"begin to authorize with auth code.");
             OAuthAuthenticator auth = ApplicationController.Instance.CurWebexManager.CurAuthenticator as OAuthAuthenticator;
             auth?.Authorize(authCode, result =>
             {
                 IsBusy = false;
                 if (result.IsSuccess)
                 {
-                    output("authorize success!");
+                    Output("authorize success!");
                     ApplicationController.Instance.ChangeState(State.Main);
                 }
                 else
                 {
-                    output("authorize failed!");
+                    Output("authorize failed!");
                 }
             });
         }
@@ -116,7 +116,7 @@ namespace KitchenSink
             {
                 int start = uri.IndexOf("code=");
                 string authCode = uri.Substring(start + "code=".Length, 64);
-                output($"Get the auth code: {authCode}");
+                Output($"Get the auth code: {authCode}");
                 AuthorizeByOAuthAccessToken(authCode);
             }
         }
@@ -134,7 +134,7 @@ namespace KitchenSink
             ApplicationController.Instance.ChangeState(State.PreLogin);
         }
 
-        private void output(String format, params object[] args)
+        private void Output(String format, params object[] args)
         {
             ApplicationController.Instance.AppLogOutput(format, args);
         }

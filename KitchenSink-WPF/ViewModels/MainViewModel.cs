@@ -66,7 +66,7 @@ namespace KitchenSink
             {
                 if (r.IsSuccess)
                 {
-                    webexManager.CurUser = (WebexSDK.Person)r.Data;
+                    webexManager.CurUser = r.Data;
                     ApplicationController.Instance.ShellViewModel.LoginInfo = "login as: " + webexManager.CurUser.DisplayName;
                 }
                 else
@@ -82,7 +82,7 @@ namespace KitchenSink
             var webexManager = ApplicationController.Instance.CurWebexManager;
             webexManager.CurWebex.Phone.Register(result =>
             {
-                if (result.IsSuccess == true)
+                if (result.IsSuccess)
                 {
                     ApplicationController.Instance.ShellViewModel.ConnectionInfo = "webex cloud connected";
                 }

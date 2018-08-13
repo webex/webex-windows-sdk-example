@@ -91,7 +91,7 @@ namespace KitchenSink
         {
             SDKLogOutput += msg + "\n";
         }
-        public void output(string format, params object[] args)
+        public void Output(string format, params object[] args)
         {
             AppLogOutput += string.Format("{0,-19}", $"{DateTime.UtcNow}") + string.Format(format, args) + "\n";
         }

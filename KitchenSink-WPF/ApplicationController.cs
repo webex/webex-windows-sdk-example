@@ -34,7 +34,7 @@ namespace KitchenSink
     public class ApplicationController
     {
         #region Fields
-        Dictionary<WorkSpace, Border> dicWorkSpaces;
+        readonly Dictionary<WorkSpace, Border> dicWorkSpaces;
         #endregion
 
         #region Properties
@@ -139,7 +139,7 @@ namespace KitchenSink
 
         public void AppLogOutput(String format, params object[] args)
         {
-            ShellViewModel.output(format, args);
+            ShellViewModel.Output(format, args);
         }
 
         #endregion

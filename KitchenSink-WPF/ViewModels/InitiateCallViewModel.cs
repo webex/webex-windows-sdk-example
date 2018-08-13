@@ -175,22 +175,22 @@ namespace KitchenSink
         private void FetchRecentContacts()
         {
             var webex = ApplicationController.Instance.CurWebexManager.CurWebex;
-            List<string> recentContacts = ApplicationController.Instance.CurWebexManager?.RecentContacts?.RecentContactsStore;
-            List<Person> personList = new List<Person>();
+            List<string> contacts = ApplicationController.Instance.CurWebexManager?.RecentContacts?.RecentContactsStore;
+            List<Person> persons = new List<Person>();
 
-            if (recentContacts == null || personList == null)
+            if (contacts == null || persons == null)
             {
                 return;
             }
 
-            foreach (var item in recentContacts)
+            foreach (var item in contacts)
             {
                 webex?.People?.Get(item, r =>
                 {
                     if (r.IsSuccess)
                     {
-                        personList.Add((Person)(r.Data));
-                        RecentContacts = new List<Person>(personList);
+                        persons.Add(r.Data);
+                        RecentContacts = new List<Person>(persons);
                     }
                 });
             }

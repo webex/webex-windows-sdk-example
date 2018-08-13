@@ -32,7 +32,7 @@ namespace KitchenSink
 {
     public class SpaceManageViewModel : ViewModelBase
     {
-        private Webex webex;
+        private readonly Webex webex;
         public RelayCommand CreateSpaceCMD { get; set; }
         public RelayCommand DeleteSpaceCMD { get; set; }
         public RelayCommand CreateMembershipCMD { get; set; }

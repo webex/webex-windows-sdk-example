@@ -35,7 +35,7 @@ namespace KitchenSink
     {
         #region Fields
 
-        WebexSDK.Webex webex;
+        readonly WebexSDK.Webex webex;
         WebexSDK.Call currentCall
         {
             get
@@ -47,7 +47,7 @@ namespace KitchenSink
                 ApplicationController.Instance.CurWebexManager.currentCall = value;
             }
         }
-        CallView curCallView;
+        readonly CallView curCallView;
 
         #endregion
 
@@ -316,7 +316,7 @@ namespace KitchenSink
                     {
                         if (!r.IsSuccess)
                         {
-                            output($"Start share failed! Error: {r.Error?.ErrorCode.ToString()} {r.Error?.Reason}");
+                            Output($"Start share failed! Error: {r.Error?.ErrorCode.ToString()} {r.Error?.Reason}");
                         }
                         IfShowStopShareButton = true;
                     });
@@ -377,11 +377,6 @@ namespace KitchenSink
                 {
                     IfShowStopShareButton = false;
                 }
-                else
-                {
-
-                }
-
             });
         }
 
@@ -544,7 +539,7 @@ namespace KitchenSink
                 }
                 else
                 {
-                    output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
+                    Output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
                 }
             });
         }
@@ -560,7 +555,7 @@ namespace KitchenSink
             {
                 if (!result.IsSuccess)
                 {
-                    output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
+                    Output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
                 }               
             });
         }
@@ -575,7 +570,7 @@ namespace KitchenSink
             {
                 if (!result.IsSuccess)
                 {
-                    output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
+                    Output($"Error: {result.Error?.ErrorCode.ToString()} {result.Error?.Reason}");
                 }
             });
         }
@@ -588,7 +583,7 @@ namespace KitchenSink
                 {
                     if (!result.IsSuccess)
                     {
-
+                        Output("Hangup failed.");
                     }
                 });
             }
@@ -676,7 +671,7 @@ namespace KitchenSink
             OnPropertyChanged("CallStatus");
         }
 
-        private void output(String format, params object[] args)
+        private void Output(String format, params object[] args)
         {
             ApplicationController.Instance.AppLogOutput(format, args);
         }
@@ -730,7 +725,7 @@ namespace KitchenSink
             
         }
 
-        private void unRegisterCallEvent()
+        private void UnRegisterCallEvent()
         {
             if (currentCall == null)
             {
@@ -761,9 +756,9 @@ namespace KitchenSink
         private void CurrentCall_onDisconnected(CallDisconnectedEvent reason)
         {
             RefreshCallStatusView();
-            UpdateRecentContactsStore();        
-            unRegisterCallEvent();
-            output("call is disconnectd for " + reason?.GetType().Name);
+            UpdateRecentContactsStore();
+            UnRegisterCallEvent();
+            Output("call is disconnectd for " + reason?.GetType().Name);
             this.curCallView.RefreshViews();
             //this.IfShowRatingView = true;
             currentCall = null;
@@ -776,25 +771,25 @@ namespace KitchenSink
 
             if (obj is CallMembershipJoinedEvent)
             {
-                output($"{obj.CallMembership.Email} joined");
+                Output($"{obj.CallMembership.Email} joined");
             }
             else if (obj is CallMembershipLeftEvent)
             {
-                output($"{obj.CallMembership.Email} left");
+                Output($"{obj.CallMembership.Email} left");
             }
             else if (obj is CallMembershipDeclinedEvent)
             {
-                output($"{obj.CallMembership.Email} decline");
+                Output($"{obj.CallMembership.Email} decline");
             }
             else if (obj is CallMembershipSendingAudioEvent)
             {
                 if (obj.CallMembership.IsSendingAudio)
                 {
-                    output($"{obj.CallMembership.Email} unmute audio");
+                    Output($"{obj.CallMembership.Email} unmute audio");
                 }
                 else
                 {
-                    output($"{obj.CallMembership.Email} mute audio");
+                    Output($"{obj.CallMembership.Email} mute audio");
                 }
                 
             }
@@ -802,27 +797,23 @@ namespace KitchenSink
             {
                 if (obj.CallMembership.IsSendingVideo)
                 {
-                    output($"{obj.CallMembership.Email} unmute video");
+                    Output($"{obj.CallMembership.Email} unmute video");
                 }
                 else
                 {
-                    output($"{obj.CallMembership.Email} mute video");
+                    Output($"{obj.CallMembership.Email} mute video");
                 }
             }
             else if (obj is CallMembershipSendingShareEvent)
             {
                 if (obj.CallMembership.IsSendingShare)
                 {
-                    output($"{obj.CallMembership.Email} sending share");
+                    Output($"{obj.CallMembership.Email} sending share");
                 }
                 else
                 {
-                    output($"{obj.CallMembership.Email} stop share");
+                    Output($"{obj.CallMembership.Email} stop share");
                 }
-            }
-            else
-            {
-
             }
 
 
@@ -834,17 +825,17 @@ namespace KitchenSink
 
             if (mediaChgEvent is LocalVideoViewSizeChangedEvent)
             {
-                output($"remote video size: width[{mediaChgEvent.Call.LocalVideoViewSize.Width}] height[{mediaChgEvent.Call.LocalVideoViewSize.Height}]");
+                Output($"remote video size: width[{mediaChgEvent.Call.LocalVideoViewSize.Width}] height[{mediaChgEvent.Call.LocalVideoViewSize.Height}]");
                 this.AspectRatioLocalVedio = mediaChgEvent.Call.LocalVideoViewSize.Width / (double)mediaChgEvent.Call.LocalVideoViewSize.Height;
             }
             else if (mediaChgEvent is RemoteVideoViewSizeChangedEvent)
             {
-                output($"remote video size: width[{mediaChgEvent.Call.RemoteVideoViewSize.Width}] height[{mediaChgEvent.Call.RemoteVideoViewSize.Height}]");
+                Output($"remote video size: width[{mediaChgEvent.Call.RemoteVideoViewSize.Width}] height[{mediaChgEvent.Call.RemoteVideoViewSize.Height}]");
                 this.AspectRatioRemoteVedio = mediaChgEvent.Call.RemoteVideoViewSize.Width / (double)mediaChgEvent.Call.RemoteVideoViewSize.Height;
             }
             else if (mediaChgEvent is RemoteShareViewSizeChangedEvent)
             {
-                output($"remote share size: width[{mediaChgEvent.Call.RemoteShareViewSize.Width}] height[{mediaChgEvent.Call.RemoteShareViewSize.Height}]");
+                Output($"remote share size: width[{mediaChgEvent.Call.RemoteShareViewSize.Width}] height[{mediaChgEvent.Call.RemoteShareViewSize.Height}]");
                 this.AspectShareScreenVideo = mediaChgEvent.Call.RemoteShareViewSize.Width / (double)mediaChgEvent.Call.RemoteShareViewSize.Height;
             }
             else if (mediaChgEvent is RemoteSendingVideoEvent)
@@ -852,7 +843,7 @@ namespace KitchenSink
                 this.curCallView?.RefreshRemoteViews();
 
                 var remoteSendingVideoEvent = mediaChgEvent as RemoteSendingVideoEvent;
-                output($"RemoteSendingVideoEvent: IsSending[{remoteSendingVideoEvent.IsSending}]");
+                Output($"RemoteSendingVideoEvent: IsSending[{remoteSendingVideoEvent.IsSending}]");
                 if (remoteSendingVideoEvent.IsSending)
                 {
                     UpdateRemoteVideoView();   
@@ -870,21 +861,21 @@ namespace KitchenSink
             else if (mediaChgEvent is RemoteSendingAudioEvent)
             {
                 var remoteSendingAudioEvent = mediaChgEvent as RemoteSendingAudioEvent;
-                output($"RemoteSendingAudioEvent: IsSending[{remoteSendingAudioEvent.IsSending}]");
+                Output($"RemoteSendingAudioEvent: IsSending[{remoteSendingAudioEvent.IsSending}]");
             }
             else if (mediaChgEvent is RemoteSendingShareEvent)
             {
                 this.curCallView?.RefreshShareViews();
 
                 var remoteSendingShareEvent = mediaChgEvent as RemoteSendingShareEvent;
-                output($"RemoteSendingShareEvent: IsSending[{remoteSendingShareEvent.IsSending}]");
+                Output($"RemoteSendingShareEvent: IsSending[{remoteSendingShareEvent.IsSending}]");
                 curCallView.SwitchShareViewWithRemoteView(remoteSendingShareEvent.IsSending);
             }
             else if (mediaChgEvent is SendingVideoEvent)
             {
                 this.curCallView?.RefreshLocalViews();
                 var sendingVideoEvent = mediaChgEvent as SendingVideoEvent;
-                output($"SendingVideoEvent: IsSending[{sendingVideoEvent.IsSending}]");
+                Output($"SendingVideoEvent: IsSending[{sendingVideoEvent.IsSending}]");
                 if (sendingVideoEvent.IsSending)
                 {
                     UpdateLocalVideoView();
@@ -893,41 +884,41 @@ namespace KitchenSink
             else if (mediaChgEvent is SendingAudioEvent)
             {
                 var sendingAudioEvent = mediaChgEvent as SendingAudioEvent;
-                output($"SendingAudioEvent: IsSending[{sendingAudioEvent.IsSending}]");
+                Output($"SendingAudioEvent: IsSending[{sendingAudioEvent.IsSending}]");
             }
             else if (mediaChgEvent is SendingShareEvent)
             {
                 var sendingShareEvent = mediaChgEvent as SendingShareEvent;
-                output($"SendingShareEvent: IsSending[{sendingShareEvent.IsSending}]");
+                Output($"SendingShareEvent: IsSending[{sendingShareEvent.IsSending}]");
             }
             else if (mediaChgEvent is ReceivingVideoEvent)
             {
                 this.curCallView?.RefreshRemoteViews();
 
                 var receivingVideoEvent = mediaChgEvent as ReceivingVideoEvent;
-                output($"ReceivingVideoEvent: IsReceiving[{receivingVideoEvent.IsReceiving}]");
+                Output($"ReceivingVideoEvent: IsReceiving[{receivingVideoEvent.IsReceiving}]");
             }
             else if (mediaChgEvent is ReceivingAudioEvent)
             {
                 var receivingAudioEvent = mediaChgEvent as ReceivingAudioEvent;
-                output($"ReceivingAudioEvent: IsReceiving[{receivingAudioEvent.IsReceiving}]");
+                Output($"ReceivingAudioEvent: IsReceiving[{receivingAudioEvent.IsReceiving}]");
             }
             else if (mediaChgEvent is ReceivingShareEvent)
             {
                 this.curCallView?.RefreshShareViews();
 
                 var receivingShareEvent = mediaChgEvent as ReceivingShareEvent;
-                output($"ReceivingShareEvent: IsReceiving[{receivingShareEvent.IsReceiving}]");
+                Output($"ReceivingShareEvent: IsReceiving[{receivingShareEvent.IsReceiving}]");
             }
             else if (mediaChgEvent is CameraSwitchedEvent)
             {
                 var cameraSwitchedEvent = mediaChgEvent as CameraSwitchedEvent;
-                output($"CameraSwitchedEvent: switch camera to {cameraSwitchedEvent.Camera.Name}");
+                Output($"CameraSwitchedEvent: switch camera to {cameraSwitchedEvent.Camera.Name}");
             }
             else if (mediaChgEvent is SpeakerSwitchedEvent)
             {
                 var speakerSwitchedEvent = mediaChgEvent as SpeakerSwitchedEvent;
-                output($"SpeakerSwitchedEvent: switch speaker to {speakerSwitchedEvent.Speaker.Name}");
+                Output($"SpeakerSwitchedEvent: switch speaker to {speakerSwitchedEvent.Speaker.Name}");
             }
             else if (mediaChgEvent is RemoteAuxVideoPersonChangedEvent)
             {
@@ -946,12 +937,12 @@ namespace KitchenSink
                                 find.PersonName = r.Data.DisplayName;
                             }
                         });
-                        output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged.RemoteAuxVideo.Person.Email}");
+                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged.RemoteAuxVideo.Person.Email}");
                     }
                     else
                     {
                         find.IsShow = false;
-                        output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to no person");
+                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to no person");
                     }
                 }
             }
@@ -967,27 +958,28 @@ namespace KitchenSink
                         ActiveSpeaker = r.Data.DisplayName;
                     }
                 });
-                output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged.ActiveSpeaker.Email}");
+                Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged.ActiveSpeaker.Email}");
             }
             else if (mediaChgEvent is ReceivingAuxVideoEvent)
             {
                 var receivingAuxVideo = mediaChgEvent as ReceivingAuxVideoEvent;
                 var index = currentCall.RemoteAuxVideos.IndexOf(receivingAuxVideo.RemoteAuxVideo);
-                output($"ReceivingAuxVideoEvent:remote aux[{index}] IsReceivingVideo[{receivingAuxVideo.RemoteAuxVideo.IsReceivingVideo}]");
+                Output($"ReceivingAuxVideoEvent:remote aux[{index}] IsReceivingVideo[{receivingAuxVideo.RemoteAuxVideo.IsReceivingVideo}]");
             }
             else if (mediaChgEvent is RemoteAuxVideoSizeChangedEvent)
             {
                 var auxViewSizeChanged = mediaChgEvent as RemoteAuxVideoSizeChangedEvent;
                 var viewSize = auxViewSizeChanged.RemoteAuxVideo.RemoteAuxVideoSize;
                 var index = currentCall.RemoteAuxVideos.IndexOf(auxViewSizeChanged.RemoteAuxVideo);
-                output($"RemoteAuxVideoSizeChangedEvent: remote aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
+                Output($"RemoteAuxVideoSizeChangedEvent: remote aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
                 var remoteAuxVideo = auxViewSizeChanged.RemoteAuxVideo;
                 UpdateRemoteAuxVideoView(remoteAuxVideo);
             }
             else if (mediaChgEvent is RemoteAuxVideosCountChangedEvent)
             {
                 var remoteVideosCountChanged = mediaChgEvent as RemoteAuxVideosCountChangedEvent;
-                output($"RemoteAuxVideosCountChangedEvent: remote videos count changes to: {remoteVideosCountChanged.Count}");
+                Output($"RemoteAuxVideosCountChangedEvent: remote videos count changes to: {remoteVideosCountChanged.Count}");
+                //when one-on-one call or there is only one remote particpant, if you dont want subscirbe this remote auxiliary video, you can subscribe when remote auxiliary videos count is greater than one.
                 var remoteVideosCount = remoteVideosCountChanged.Count > 1? remoteVideosCountChanged.Count:0;
 
                 int idx = 0;
@@ -997,7 +989,7 @@ namespace KitchenSink
                     {
                         item.IsShow = true;
                         item.AuxVideo = currentCall.SubscribeRemoteAuxVideo(item.Handle);
-                        output($"Subscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
+                        Output($"Subscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
                     }
                     else if (item.AuxVideo != null && idx >= remoteVideosCount)
                     {
@@ -1005,7 +997,7 @@ namespace KitchenSink
                         item.AuxVideo = null;
                         item.IsShow = false;
                         curCallView.UpdateAvarta(item.Handle, null);
-                        output($"Unsubscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
+                        Output($"Unsubscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
                     }
                     idx++;
                 }
@@ -1025,7 +1017,7 @@ namespace KitchenSink
             {
                 var remoteAuxSendingVideo = mediaChgEvent as RemoteAuxSendingVideoEvent;
                 var index = currentCall.RemoteAuxVideos.IndexOf(remoteAuxSendingVideo.RemoteAuxVideo);
-                output($"RemoteAuxSendingVideoEvent: remote aux[{index}] IsSendingVideo[{remoteAuxSendingVideo.RemoteAuxVideo.IsSendingVideo}]");
+                Output($"RemoteAuxSendingVideoEvent: remote aux[{index}] IsSendingVideo[{remoteAuxSendingVideo.RemoteAuxVideo.IsSendingVideo}]");
                 var remoteAuxVideo = remoteAuxSendingVideo.RemoteAuxVideo;
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -1073,16 +1065,16 @@ namespace KitchenSink
 
         private void CurrentCall_onCapabilitiesChanged(Capabilities capability)
         {   
-            if (capability is CapabilitieDTMF)
+            if (capability is CapabilitiesDTMF)
             {
-                CapabilitieDTMF dtmf = capability as CapabilitieDTMF;
+                CapabilitiesDTMF dtmf = capability as CapabilitiesDTMF;
                 if (dtmf.IsEnabled)
                 {
-                    output($"DTMF Capability Enable");
+                    Output($"DTMF Capability Enable");
                 }
                 else
                 {
-                    output($"DTMF Capability Disable");
+                    Output($"DTMF Capability Disable");
                 }
             }
         }
@@ -1127,18 +1119,18 @@ namespace KitchenSink
             }
             if (!currentCall.IsSendingDTMFEnabled)
             {
-                output("Current call not support sending DTMF.");
+                Output("Current call not support sending DTMF.");
                 return;
             }
             currentCall.SendDtmf(key, r =>
             {
                 if (r.IsSuccess)
                 {
-                    output($"Send DTMF[{key}] Success!");
+                    Output($"Send DTMF[{key}] Success!");
                 }
                 else
                 {
-                    output($"Send DTMF[{key}] Fail!");
+                    Output($"Send DTMF[{key}] Fail!");
                 }
             });
         }

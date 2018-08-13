@@ -51,12 +51,12 @@ namespace KitchenSink
 
 
 
-        WebexSDK.Webex webex;
-        WebexSDK.MessageClient messageClient;
+        readonly WebexSDK.Webex webex;
+        readonly WebexSDK.MessageClient messageClient;
 
-        private bool isDirectMessage = false;
-        private string toPersonEmail=null;
-        private string toSpaceId = null;
+        private readonly bool isDirectMessage = false;
+        private readonly string toPersonEmail=null;
+        private readonly string toSpaceId = null;
 
         private string messageText=null;
         public string MessageText
@@ -73,19 +73,7 @@ namespace KitchenSink
         }
 
         public ObservableCollection<string> AttachedFiles { get; set; }
-
-        private TimelineMessage selectedMessage;
-        public TimelineMessage SelectedMessage
-        {
-            get
-            {
-                return this.selectedMessage;
-            }
-            set
-            {
-                this.selectedMessage = value;
-            }
-        }
+        public TimelineMessage SelectedMessage { get; set; }
         
         private string selectedFileIndex;
         public string SelectedFileIndex
@@ -290,7 +278,7 @@ namespace KitchenSink
         {
             if (e is MessageArrived)
             {
-                output("received a message.");
+                Output("received a message.");
                 var messageArrived = e as MessageArrived;
                 var msgInfo = messageArrived?.Message;
                 if (msgInfo != null)
@@ -298,7 +286,7 @@ namespace KitchenSink
                     // self is mentioned
                     if (msgInfo.IsSelfMentioned)
                     {
-                        output($"{msgInfo.PersonEmail} mentioned you.");
+                        Output($"{msgInfo.PersonEmail} mentioned you.");
                     }
 
                     var timelineMessage = BuildTimelineMessage(msgInfo);
@@ -331,7 +319,7 @@ namespace KitchenSink
             else if (e is MessageDeleted)
             {
                 var messageDeleted = e as MessageDeleted;
-                output("a message is deleted");
+                Output("a message is deleted");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     try
@@ -358,7 +346,7 @@ namespace KitchenSink
             ApplicationController.Instance.ChangeState(State.Main);
         }
 
-        private void output(String format, params object[] args)
+        private void Output(String format, params object[] args)
         {
             ApplicationController.Instance.AppLogOutput(format, args);
         }
@@ -375,7 +363,7 @@ namespace KitchenSink
             }
             catch(Exception e)
             {
-                output($"{fileName}: {e.Message}");
+                Output($"{fileName}: {e.Message}");
                 return false;
             }
             string fileclass = "";
@@ -436,12 +424,12 @@ namespace KitchenSink
                     {
                         MessageSet(sendMessage, r.Data);
                         PrintPayload(r.Data);
-                        output($"send a message successfully.");
+                        Output($"send a message successfully.");
                         UpdateRecentContactsStore(r.Data.ToPersonId);
                     }
                     else
                     {
-                        output($"send the message failed. {r.Error.ErrorCode} {r.Error.Reason}");
+                        Output($"send the message failed. {r.Error.ErrorCode} {r.Error.Reason}");
                     }
                 });
             }
@@ -453,11 +441,11 @@ namespace KitchenSink
                     {
                         MessageSet(sendMessage, r.Data);
                         PrintPayload(r.Data);
-                        output($"send a message successfullly.");
+                        Output($"send a message successfullly.");
                     }
                     else
                     {
-                        output($"send the message failed. {r.Error.ErrorCode} {r.Error.Reason}");
+                        Output($"send the message failed. {r.Error.ErrorCode} {r.Error.Reason}");
                     }
                 });
             }
@@ -475,16 +463,18 @@ namespace KitchenSink
             {
                 foreach (var item in AttachedFiles)
                 {
-                    var file = new LocalFile();
-                    file.Path = item;
-                    file.Name = Path.GetFileName(item);
-                    file.Size = (ulong)new System.IO.FileInfo(item).Length;
-                    file.Mime = Mime.GetMimeType(Path.GetExtension(item));
+                    var file = new LocalFile
+                    {
+                        Path = item,
+                        Name = Path.GetFileName(item),
+                        Size = (ulong)new System.IO.FileInfo(item).Length,
+                        Mime = Mime.GetMimeType(Path.GetExtension(item))
+                    };
                     file.UploadProgressHandler = (r) =>
                     {
                         if (r.IsSuccess)
                         {
-                            output($"{file.Name} is uploading {r.Data}%");
+                            Output($"{file.Name} is uploading {r.Data}%");
                         }
                     };
 
@@ -493,32 +483,35 @@ namespace KitchenSink
                         // Get thumbnail
                         image = Image.FromFile(item);
                         var thumbnail = image?.GetThumbnailImage(image.Width, image.Height, null, System.IntPtr.Zero);
-
-                        // Save to file
-                        var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + System.Diagnostics.Process.GetCurrentProcess().ProcessName + "\\thumbnails\\";
-                        try
+                        if(thumbnail != null)
                         {
-                            System.IO.Directory.CreateDirectory(path);
+                            // Save to file
+                            var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + System.Diagnostics.Process.GetCurrentProcess().ProcessName + "\\thumbnails\\";
+                            try
+                            {
+                                System.IO.Directory.CreateDirectory(path);
+                            }
+                            catch (Exception e)
+                            {
+                                Output($"{e.Message}");
+                            }
+
+                            string name = "thumb-" + Guid.NewGuid().ToString() + "-" + Path.GetFileName(file.Path);
+                            var fullPath = path + name;
+                            thumbnail.Save(fullPath);
+
+                            var mimeType = Mime.GetMimeType(Path.GetExtension(fullPath));
+
+                            // Build Thumbnail
+                            file.LocalThumbnail = new LocalFile.Thumbnail()
+                            {
+                                Width = thumbnail.Width,
+                                Height = thumbnail.Height,
+                                Mime = mimeType,
+                                Path = fullPath,
+                            };
                         }
-                        catch (Exception e)
-                        {
-                            output($"{e.Message}");
-                        }
-                       
-                        string name = "thumb-" + Guid.NewGuid().ToString() + "-" + Path.GetFileName(file.Path);
-                        var fullPath = path + name;
-                        thumbnail.Save(fullPath);
 
-                        var mimeType = Mime.GetMimeType(Path.GetExtension(fullPath));
-
-                        // Build Thumbnail
-                        file.LocalThumbnail = new LocalFile.Thumbnail()
-                        {
-                            Width = thumbnail.Width,
-                            Height = thumbnail.Height,
-                            Mime = mimeType,
-                            Path = fullPath,
-                        };
                     }
 
                     files.Add(file);
@@ -530,8 +523,10 @@ namespace KitchenSink
         TimelineMessage ConstructSendMessage(string text, List<LocalFile> files = null)
         {
             var message = new Message();
-            var timelineMessage = new TimelineMessage();
-            timelineMessage.MessageInfo = message;
+            var timelineMessage = new TimelineMessage
+            {
+                MessageInfo = message
+            };
 
             message.PersonEmail = "You";
             message.Created = DateTime.UtcNow;
@@ -574,9 +569,11 @@ namespace KitchenSink
 
         TimelineMessage BuildTimelineMessage(Message message)
         {
-            var timelineMessage = new TimelineMessage();           
-            timelineMessage.MessageInfo = message;
-            timelineMessage.Files = new List<TimelineMessage.File>();
+            var timelineMessage = new TimelineMessage
+            {
+                MessageInfo = message,
+                Files = new List<TimelineMessage.File>()
+            };
 
             if (message.Files != null && message.Files.Count > 0)
             {
@@ -641,11 +638,11 @@ namespace KitchenSink
                 {
                     if (r.IsSuccess)
                     {
-                        output($"downloading {r.Data}%");
+                        Output($"downloading {r.Data}%");
                     }
                     else
                     {
-                        output($"download failed {r.Data}");
+                        Output($"download failed {r.Data}");
                     }
                 });
             }
@@ -656,8 +653,10 @@ namespace KitchenSink
 
         private void AttachFile(object o)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Multiselect = true;
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Multiselect = true
+            };
             if (ofd.ShowDialog() == true)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -673,15 +672,15 @@ namespace KitchenSink
         {
             if (SelectedMessage != null)
             {
-                webex?.Messages.Delete(selectedMessage.MessageInfo.Id, r=>
+                webex?.Messages.Delete(SelectedMessage.MessageInfo.Id, r=>
                 {
                     if (!r.IsSuccess)
                     {
-                        output($"delete message failed {r.Error.ErrorCode}:{r.Error.Reason}");
+                        Output($"delete message failed {r.Error.ErrorCode}:{r.Error.Reason}");
                     }
                     else
                     {
-                        output("delete message success.");
+                        Output("delete message success.");
                     }
                 });
             }
@@ -718,7 +717,7 @@ namespace KitchenSink
                                 MessageList.Insert(0, timelineMessage);
                             }
                         });
-                        output($"List {r.Data.Count} messages.");
+                        Output($"List {r.Data.Count} messages.");
                     }
                 });
             }
@@ -736,7 +735,7 @@ namespace KitchenSink
                 if (r.IsSuccess)
                 {
                     PrintPayload(r.Data);
-                    output($"Get the detail of the message.");
+                    Output($"Get the detail of the message.");
                 }
             });
 

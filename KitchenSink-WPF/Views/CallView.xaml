@@ -73,7 +73,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="2" HorizontalAlignment="Center" >
                         <TextBlock Text="Select Share: " Margin="5"></TextBlock>
-                        <ComboBox Text="Select Share Source" ItemsSource="{Binding ShareSourceList}" SelectedItem="{Binding SelectedSource}" DropDownOpened="combShareSourceList_DropDownOpened">
+                        <ComboBox Text="Select Share Source" ItemsSource="{Binding ShareSourceList}" SelectedItem="{Binding SelectedSource}" DropDownOpened="CombShareSourceList_DropDownOpened">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
