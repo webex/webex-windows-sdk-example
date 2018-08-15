@@ -760,8 +760,11 @@ namespace KitchenSink
             UnRegisterCallEvent();
             Output("call is disconnectd for " + reason?.GetType().Name);
             this.curCallView.RefreshViews();
+#pragma warning disable S125 // Sections of code should not be "commented out"
             //this.IfShowRatingView = true;
+#pragma warning restore S125 // Sections of code should not be "commented out"
             currentCall = null;
+
             ApplicationController.Instance.CurWebexManager.CurCalleeAddress = null;
         }
 
@@ -927,22 +930,22 @@ namespace KitchenSink
                 var remoteAuxVideo = videoPersonChanged.RemoteAuxVideo;
                 foreach (var handle in remoteAuxVideo.HandleList)
                 {
-                    var find = RemoteAuxVideoViews.Where(x => x.Handle == handle).First();
-                    if (remoteAuxVideo.Person != null)
+                    var find = RemoteAuxVideoViews.First(x => x.Handle == handle);
+                    if (videoPersonChanged.ToPerson != null)
                     {
-                        ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(remoteAuxVideo.Person.PersonId, r =>
+                        ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(videoPersonChanged.ToPerson.PersonId, r =>
                         {
                             if (r.IsSuccess)
                             {
                                 find.PersonName = r.Data.DisplayName;
                             }
                         });
-                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged.RemoteAuxVideo.Person.Email}");
+                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged?.ToPerson?.Email}");
                     }
                     else
                     {
                         find.IsShow = false;
-                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to no person");
+                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to null.");
                     }
                 }
             }
@@ -951,14 +954,14 @@ namespace KitchenSink
                 CallMemberships = new ObservableCollection<CallMembership>(currentCall?.Memberships);
 
                 var activeSpeakerChanged = mediaChgEvent as ActiveSpeakerChangedEvent;
-                ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ActiveSpeaker.PersonId, r =>
+                ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
                 {
                     if (r.IsSuccess)
                     {
                         ActiveSpeaker = r.Data.DisplayName;
                     }
                 });
-                Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged.ActiveSpeaker.Email}");
+                Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged?.ToPerson?.Email}");
             }
             else if (mediaChgEvent is ReceivingAuxVideoEvent)
             {
@@ -1024,7 +1027,7 @@ namespace KitchenSink
                 {
                     foreach (var handle in remoteAuxVideo.HandleList)
                     {
-                        var find = RemoteAuxVideoViews.Where(x => x.Handle == handle).First();
+                        var find = RemoteAuxVideoViews.First(x => x.Handle == handle);
                         find.IsSendingVideo = remoteAuxVideo.IsSendingVideo;
                     }
                 });
@@ -1041,9 +1044,6 @@ namespace KitchenSink
                         ShowAvartar(handle, remoteAuxVideo.Person?.PersonId);
                     }
                 }
-            }
-            else
-            {
             }
         }
 
