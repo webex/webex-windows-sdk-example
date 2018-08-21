@@ -856,7 +856,7 @@ namespace KitchenSink
                     //show avatar or spinning circle
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        ShowAvartar(curCallView.RemoteViewHandle, currentCall.ActiveSpeaker?.PersonId);
+                        ShowAvartar(curCallView.RemoteViewHandle, currentCall?.ActiveSpeaker?.PersonId);
                     });
                     
                 }
@@ -982,19 +982,16 @@ namespace KitchenSink
             {
                 var remoteVideosCountChanged = mediaChgEvent as RemoteAuxVideosCountChangedEvent;
                 Output($"RemoteAuxVideosCountChangedEvent: remote videos count changes to: {remoteVideosCountChanged.Count}");
-                //when one-on-one call or there is only one remote particpant, if you dont want subscirbe this remote auxiliary video, you can subscribe when remote auxiliary videos count is greater than one.
-                var remoteVideosCount = remoteVideosCountChanged.Count > 1? remoteVideosCountChanged.Count:0;
-
                 int idx = 0;
                 foreach (var item in RemoteAuxVideoViews)
                 {
-                    if (item.AuxVideo == null && idx < remoteVideosCount)
+                    if (item.AuxVideo == null && idx < remoteVideosCountChanged.Count)
                     {
                         item.IsShow = true;
                         item.AuxVideo = currentCall.SubscribeRemoteAuxVideo(item.Handle);
                         Output($"Subscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
                     }
-                    else if (item.AuxVideo != null && idx >= remoteVideosCount)
+                    else if (item.AuxVideo != null && idx >= remoteVideosCountChanged.Count)
                     {
                         currentCall.UnsubscribeRemoteAuxVideo(item.AuxVideo);
                         item.AuxVideo = null;
@@ -1005,14 +1002,14 @@ namespace KitchenSink
                     idx++;
                 }
 
-                if(remoteVideosCount == 0)
+                if (remoteVideosCountChanged.Count == 0)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         curCallView.UpdateAvarta(curCallView.RemoteViewHandle, null);
                         ActiveSpeaker = null;
                     });
-                    
+
                     curCallView.RefreshViews();
                 }
             }
