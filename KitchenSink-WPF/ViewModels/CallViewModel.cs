@@ -841,11 +841,9 @@ namespace KitchenSink
                 Output($"remote share size: width[{mediaChgEvent.Call.RemoteShareViewSize.Width}] height[{mediaChgEvent.Call.RemoteShareViewSize.Height}]");
                 this.AspectShareScreenVideo = mediaChgEvent.Call.RemoteShareViewSize.Width / (double)mediaChgEvent.Call.RemoteShareViewSize.Height;
             }
-            else if (mediaChgEvent is RemoteSendingVideoEvent)
+            else if (mediaChgEvent is RemoteSendingVideoEvent remoteSendingVideoEvent)
             {
                 this.curCallView?.RefreshRemoteViews();
-
-                var remoteSendingVideoEvent = mediaChgEvent as RemoteSendingVideoEvent;
                 Output($"RemoteSendingVideoEvent: IsSending[{remoteSendingVideoEvent.IsSending}]");
                 if (remoteSendingVideoEvent.IsSending)
                 {
@@ -861,72 +859,58 @@ namespace KitchenSink
                     
                 }
             }
-            else if (mediaChgEvent is RemoteSendingAudioEvent)
+            else if (mediaChgEvent is RemoteSendingAudioEvent remoteSendingAudioEvent)
             {
-                var remoteSendingAudioEvent = mediaChgEvent as RemoteSendingAudioEvent;
                 Output($"RemoteSendingAudioEvent: IsSending[{remoteSendingAudioEvent.IsSending}]");
             }
-            else if (mediaChgEvent is RemoteSendingShareEvent)
+            else if (mediaChgEvent is RemoteSendingShareEvent remoteSendingShareEvent)
             {
                 this.curCallView?.RefreshShareViews();
-
-                var remoteSendingShareEvent = mediaChgEvent as RemoteSendingShareEvent;
                 Output($"RemoteSendingShareEvent: IsSending[{remoteSendingShareEvent.IsSending}]");
                 curCallView.SwitchShareViewWithRemoteView(remoteSendingShareEvent.IsSending);
             }
-            else if (mediaChgEvent is SendingVideoEvent)
+            else if (mediaChgEvent is SendingVideoEvent sendingVideoEvent)
             {
                 this.curCallView?.RefreshLocalViews();
-                var sendingVideoEvent = mediaChgEvent as SendingVideoEvent;
                 Output($"SendingVideoEvent: IsSending[{sendingVideoEvent.IsSending}]");
                 if (sendingVideoEvent.IsSending)
                 {
                     UpdateLocalVideoView();
                 }
             }
-            else if (mediaChgEvent is SendingAudioEvent)
+            else if (mediaChgEvent is SendingAudioEvent sendingAudioEvent)
             {
-                var sendingAudioEvent = mediaChgEvent as SendingAudioEvent;
                 Output($"SendingAudioEvent: IsSending[{sendingAudioEvent.IsSending}]");
             }
-            else if (mediaChgEvent is SendingShareEvent)
+            else if (mediaChgEvent is SendingShareEvent sendingShareEvent)
             {
-                var sendingShareEvent = mediaChgEvent as SendingShareEvent;
                 Output($"SendingShareEvent: IsSending[{sendingShareEvent.IsSending}]");
             }
-            else if (mediaChgEvent is ReceivingVideoEvent)
+            else if (mediaChgEvent is ReceivingVideoEvent receivingVideoEvent)
             {
                 this.curCallView?.RefreshRemoteViews();
-
-                var receivingVideoEvent = mediaChgEvent as ReceivingVideoEvent;
                 Output($"ReceivingVideoEvent: IsReceiving[{receivingVideoEvent.IsReceiving}]");
             }
-            else if (mediaChgEvent is ReceivingAudioEvent)
+            else if (mediaChgEvent is ReceivingAudioEvent receivingAudioEvent)
             {
-                var receivingAudioEvent = mediaChgEvent as ReceivingAudioEvent;
                 Output($"ReceivingAudioEvent: IsReceiving[{receivingAudioEvent.IsReceiving}]");
             }
-            else if (mediaChgEvent is ReceivingShareEvent)
+            else if (mediaChgEvent is ReceivingShareEvent receivingShareEvent)
             {
                 this.curCallView?.RefreshShareViews();
-
-                var receivingShareEvent = mediaChgEvent as ReceivingShareEvent;
                 Output($"ReceivingShareEvent: IsReceiving[{receivingShareEvent.IsReceiving}]");
             }
-            else if (mediaChgEvent is CameraSwitchedEvent)
+            else if (mediaChgEvent is CameraSwitchedEvent cameraSwitchedEvent)
             {
-                var cameraSwitchedEvent = mediaChgEvent as CameraSwitchedEvent;
                 Output($"CameraSwitchedEvent: switch camera to {cameraSwitchedEvent.Camera.Name}");
             }
-            else if (mediaChgEvent is SpeakerSwitchedEvent)
+            else if (mediaChgEvent is SpeakerSwitchedEvent speakerSwitchedEvent)
             {
-                var speakerSwitchedEvent = mediaChgEvent as SpeakerSwitchedEvent;
                 Output($"SpeakerSwitchedEvent: switch speaker to {speakerSwitchedEvent.Speaker.Name}");
             }
-            else if (mediaChgEvent is RemoteAuxVideoPersonChangedEvent)
+            else if (mediaChgEvent is RemoteAuxVideoPersonChangedEvent videoPersonChanged)
             {
                 curCallView.RefreshViews();
-                var videoPersonChanged = mediaChgEvent as RemoteAuxVideoPersonChangedEvent;
                 var remoteAuxVideo = videoPersonChanged.RemoteAuxVideo;
                 foreach (var handle in remoteAuxVideo.HandleList)
                 {
@@ -949,11 +933,9 @@ namespace KitchenSink
                     }
                 }
             }
-            else if (mediaChgEvent is ActiveSpeakerChangedEvent)
+            else if (mediaChgEvent is ActiveSpeakerChangedEvent activeSpeakerChanged)
             {
                 CallMemberships = new ObservableCollection<CallMembership>(currentCall?.Memberships);
-
-                var activeSpeakerChanged = mediaChgEvent as ActiveSpeakerChangedEvent;
                 ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
                 {
                     if (r.IsSuccess)
@@ -963,24 +945,21 @@ namespace KitchenSink
                 });
                 Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged?.ToPerson?.Email}");
             }
-            else if (mediaChgEvent is ReceivingAuxVideoEvent)
+            else if (mediaChgEvent is ReceivingAuxVideoEvent receivingAuxVideo)
             {
-                var receivingAuxVideo = mediaChgEvent as ReceivingAuxVideoEvent;
                 var index = currentCall.RemoteAuxVideos.IndexOf(receivingAuxVideo.RemoteAuxVideo);
                 Output($"ReceivingAuxVideoEvent:remote aux[{index}] IsReceivingVideo[{receivingAuxVideo.RemoteAuxVideo.IsReceivingVideo}]");
             }
-            else if (mediaChgEvent is RemoteAuxVideoSizeChangedEvent)
+            else if (mediaChgEvent is RemoteAuxVideoSizeChangedEvent auxViewSizeChanged)
             {
-                var auxViewSizeChanged = mediaChgEvent as RemoteAuxVideoSizeChangedEvent;
                 var viewSize = auxViewSizeChanged.RemoteAuxVideo.RemoteAuxVideoSize;
                 var index = currentCall.RemoteAuxVideos.IndexOf(auxViewSizeChanged.RemoteAuxVideo);
                 Output($"RemoteAuxVideoSizeChangedEvent: remote aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
                 var remoteAuxVideo = auxViewSizeChanged.RemoteAuxVideo;
                 UpdateRemoteAuxVideoView(remoteAuxVideo);
             }
-            else if (mediaChgEvent is RemoteAuxVideosCountChangedEvent)
+            else if (mediaChgEvent is RemoteAuxVideosCountChangedEvent remoteVideosCountChanged)
             {
-                var remoteVideosCountChanged = mediaChgEvent as RemoteAuxVideosCountChangedEvent;
                 Output($"RemoteAuxVideosCountChangedEvent: remote videos count changes to: {remoteVideosCountChanged.Count}");
                 int idx = 0;
                 foreach (var item in RemoteAuxVideoViews)
@@ -1013,9 +992,8 @@ namespace KitchenSink
                     curCallView.RefreshViews();
                 }
             }
-            else if (mediaChgEvent is RemoteAuxSendingVideoEvent)
+            else if (mediaChgEvent is RemoteAuxSendingVideoEvent remoteAuxSendingVideo)
             {
-                var remoteAuxSendingVideo = mediaChgEvent as RemoteAuxSendingVideoEvent;
                 var index = currentCall.RemoteAuxVideos.IndexOf(remoteAuxSendingVideo.RemoteAuxVideo);
                 Output($"RemoteAuxSendingVideoEvent: remote aux[{index}] IsSendingVideo[{remoteAuxSendingVideo.RemoteAuxVideo.IsSendingVideo}]");
                 var remoteAuxVideo = remoteAuxSendingVideo.RemoteAuxVideo;
