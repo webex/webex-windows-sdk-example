@@ -935,15 +935,24 @@ namespace KitchenSink
             }
             else if (mediaChgEvent is ActiveSpeakerChangedEvent activeSpeakerChanged)
             {
-                CallMemberships = new ObservableCollection<CallMembership>(currentCall?.Memberships);
-                ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
+                if(activeSpeakerChanged.ToPerson != null)
                 {
-                    if (r.IsSuccess)
+                    ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
                     {
-                        ActiveSpeaker = r.Data.DisplayName;
-                    }
-                });
-                Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged?.ToPerson?.Email}");
+                        if (r.IsSuccess)
+                        {
+                            ActiveSpeaker = r.Data.DisplayName;
+                        }
+                    });
+                    Output($"ActiveSpeakerChangedEvent: active speaker is changed to {activeSpeakerChanged?.ToPerson?.Email}");
+                }
+                else
+                {
+                    ActiveSpeaker = null;
+                    UpdateRemoteVideoView();
+                    curCallView.RefreshRemoteViews();
+                    Output($"ActiveSpeakerChangedEvent: active speaker is changed to null");
+                }
             }
             else if (mediaChgEvent is ReceivingAuxVideoEvent receivingAuxVideo)
             {
