@@ -470,6 +470,23 @@ namespace KitchenSink
             }
         }
 
+        private bool ifShowRemoteView = false;
+        public bool IfShowRemoteView
+        {
+            get
+            {
+                return this.ifShowRemoteView;
+            }
+            set
+            {
+                if (value != ifShowRemoteView)
+                {
+                    this.ifShowRemoteView = value;
+                    OnPropertyChanged("IfShowRemoteView");
+                }
+            }
+        }
+
         #endregion
 
         #endregion
@@ -598,7 +615,7 @@ namespace KitchenSink
             
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.UpdateLocalView(curCallView.LocalViewHandle);
+                currentCall.RefreshLocalView(curCallView.LocalViewHandle);
             });
         }
         public void UpdateRemoteVideoView()
@@ -609,7 +626,7 @@ namespace KitchenSink
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.UpdateRemoteView(curCallView.RemoteViewHandle);
+                currentCall.RefreshRemoteView(curCallView.RemoteViewHandle);
             });
         }
         public void UpdateRemoteAllAuxVideoView()
@@ -622,14 +639,11 @@ namespace KitchenSink
             {
                 foreach (var item in currentCall.RemoteAuxVideos)
                 {
-                    foreach (var handle in item.HandleList)
-                    {
-                        item.UpdateViewHandle(handle);
-                    }
+                    item.RefreshView();
                 }
             });
         }
-        public void UpdateRemoteAuxVideoView(Call.RemoteAuxVideo remoteAuxVideo)
+        public void UpdateRemoteAuxVideoView(RemoteAuxVideo remoteAuxVideo)
         {
             if (currentCall == null && remoteAuxVideo == null)
             {
@@ -637,10 +651,7 @@ namespace KitchenSink
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var handle in remoteAuxVideo.HandleList)
-                {
-                    remoteAuxVideo.UpdateViewHandle(handle);
-                }
+                remoteAuxVideo.RefreshView();
             });
         }
 
@@ -653,7 +664,7 @@ namespace KitchenSink
             
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.UpdateRemoteShareView(curCallView.RemoteShareViewHandle);
+                currentCall.RefreshRemoteShareView(curCallView.RemoteShareViewHandle);
             });
         }
 
@@ -852,11 +863,13 @@ namespace KitchenSink
                 else
                 {
                     //show avatar or spinning circle
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if(currentCall.ActiveSpeaker != null)
                     {
-                        ShowAvartar(curCallView.RemoteViewHandle, currentCall?.ActiveSpeaker?.PersonId);
-                    });
-                    
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ShowAvartar(curCallView.RemoteViewHandle, currentCall?.ActiveSpeaker?.PersonId);
+                        });
+                    }
                 }
             }
             else if (mediaChgEvent is RemoteSendingAudioEvent remoteSendingAudioEvent)
@@ -912,31 +925,31 @@ namespace KitchenSink
             {
                 curCallView.RefreshViews();
                 var remoteAuxVideo = videoPersonChanged.RemoteAuxVideo;
-                foreach (var handle in remoteAuxVideo.HandleList)
+
+                var find = RemoteAuxVideoViews.First(x => x.Handle == remoteAuxVideo.Handle);
+                if (videoPersonChanged.ToPerson != null)
                 {
-                    var find = RemoteAuxVideoViews.First(x => x.Handle == handle);
-                    if (videoPersonChanged.ToPerson != null)
+                    find.IsShow = true;
+                    ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(videoPersonChanged.ToPerson.PersonId, r =>
                     {
-                        ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(videoPersonChanged.ToPerson.PersonId, r =>
+                        if (r.IsSuccess)
                         {
-                            if (r.IsSuccess)
-                            {
-                                find.PersonName = r.Data.DisplayName;
-                            }
-                        });
-                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged?.ToPerson?.Email}");
-                    }
-                    else
-                    {
-                        find.IsShow = false;
-                        Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to null.");
-                    }
+                            find.PersonName = r.Data.DisplayName;
+                        }
+                    });
+                    Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged?.ToPerson?.Email}");
+                }
+                else
+                {
+                    find.IsShow = false;
+                    Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to null.");
                 }
             }
             else if (mediaChgEvent is ActiveSpeakerChangedEvent activeSpeakerChanged)
             {
                 if(activeSpeakerChanged.ToPerson != null)
                 {
+                    IfShowRemoteView = true;
                     ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
                     {
                         if (r.IsSuccess)
@@ -948,24 +961,16 @@ namespace KitchenSink
                 }
                 else
                 {
+                    IfShowRemoteView = false;
                     ActiveSpeaker = null;
-                    UpdateRemoteVideoView();
-                    curCallView.RefreshRemoteViews();
                     Output($"ActiveSpeakerChangedEvent: active speaker is changed to null");
                 }
-            }
-            else if (mediaChgEvent is ReceivingAuxVideoEvent receivingAuxVideo)
-            {
-                var index = currentCall.RemoteAuxVideos.IndexOf(receivingAuxVideo.RemoteAuxVideo);
-                Output($"ReceivingAuxVideoEvent:remote aux[{index}] IsReceivingVideo[{receivingAuxVideo.RemoteAuxVideo.IsReceivingVideo}]");
             }
             else if (mediaChgEvent is RemoteAuxVideoSizeChangedEvent auxViewSizeChanged)
             {
                 var viewSize = auxViewSizeChanged.RemoteAuxVideo.RemoteAuxVideoSize;
                 var index = currentCall.RemoteAuxVideos.IndexOf(auxViewSizeChanged.RemoteAuxVideo);
                 Output($"RemoteAuxVideoSizeChangedEvent: remote aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
-                var remoteAuxVideo = auxViewSizeChanged.RemoteAuxVideo;
-                UpdateRemoteAuxVideoView(remoteAuxVideo);
             }
             else if (mediaChgEvent is RemoteAuxVideosCountChangedEvent remoteVideosCountChanged)
             {
@@ -989,17 +994,6 @@ namespace KitchenSink
                     }
                     idx++;
                 }
-
-                if (remoteVideosCountChanged.Count == 0)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        curCallView.UpdateAvarta(curCallView.RemoteViewHandle, null);
-                        ActiveSpeaker = null;
-                    });
-
-                    curCallView.RefreshViews();
-                }
             }
             else if (mediaChgEvent is RemoteAuxSendingVideoEvent remoteAuxSendingVideo)
             {
@@ -1009,11 +1003,8 @@ namespace KitchenSink
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    foreach (var handle in remoteAuxVideo.HandleList)
-                    {
-                        var find = RemoteAuxVideoViews.First(x => x.Handle == handle);
-                        find.IsSendingVideo = remoteAuxVideo.IsSendingVideo;
-                    }
+                    var find = RemoteAuxVideoViews.First(x => x.Handle == remoteAuxVideo.Handle);
+                    find.IsSendingVideo = remoteAuxVideo.IsSendingVideo;
                 });
 
                 if (remoteAuxVideo.IsSendingVideo)
@@ -1023,9 +1014,9 @@ namespace KitchenSink
                 else
                 {
                     //show avatar or spinning circle
-                    foreach (var handle in remoteAuxVideo.HandleList)
+                    if(remoteAuxVideo.Person != null)
                     {
-                        ShowAvartar(handle, remoteAuxVideo.Person?.PersonId);
+                        ShowAvartar(remoteAuxVideo.Handle, remoteAuxVideo.Person.PersonId);
                     }
                 }
             }
@@ -1126,7 +1117,7 @@ namespace KitchenSink
     {
         public string Name { get; set; }
         public IntPtr Handle { get; set; }
-        public Call.RemoteAuxVideo AuxVideo { get; set; }
+        public RemoteAuxVideo AuxVideo { get; set; }
 
         private bool isShow = false;
         public bool IsShow
@@ -1173,25 +1164,6 @@ namespace KitchenSink
             }
         }
 
-        public bool IsReceivingVideo
-        {
-            get
-            {
-                if (AuxVideo != null)
-                {
-                    return AuxVideo.IsReceivingVideo;
-                }
-                return true;
-            }
-            set
-            {
-                if (AuxVideo != null && value != AuxVideo.IsReceivingVideo)
-                {
-                    AuxVideo.IsReceivingVideo = value;
-                }
-                OnPropertyChanged("IsReceivingVideo");
-            }
-        }
         public bool IsSendingVideo
         {
             get

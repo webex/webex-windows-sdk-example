@@ -18,7 +18,6 @@
                 <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding PersonName}" TextAlignment="Center"/>
                     <CheckBox Content="SendingVideo" IsChecked="{Binding IsSendingVideo, Mode=OneWay}" IsEnabled="False"/>
-                    <CheckBox Content="ReceivingVideo" IsChecked="{Binding IsReceivingVideo}" />
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
@@ -41,7 +40,7 @@
                 <local:FixedAspectWinFormsHost Grid.Row="1" x:Name="wfhShareScreenVideo" Background="Transparent" AspectRatio="{Binding Path=AspectShareScreenVideo}" >
                     <wf:PictureBox x:Name="pbShareScreenVideo" SizeMode="Zoom"/>
                 </local:FixedAspectWinFormsHost>
-                <Border Grid.Row="1" Name="remoteVideoOrg" >
+                <Border Grid.Row="1" Name="remoteVideoOrg" Visibility="{Binding IfShowRemoteView, Converter={StaticResource bool2VisibilityConverter}}">
                     <local:FixedAspectWinFormsHost x:Name="wfhRemotVideo" Background="Transparent" AspectRatio="{Binding Path=AspectRatioRemoteVedio}">
                         <wf:PictureBox x:Name="pbRemoteVideo" SizeMode="Zoom" />
                     </local:FixedAspectWinFormsHost>
@@ -131,7 +130,7 @@
 
                     <StackPanel Grid.Row="2" Grid.ColumnSpan="6"  Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Active Speaker: "></TextBlock>
-                        <TextBlock Text="{Binding ActiveSpeaker}"></TextBlock>
+                        <TextBlock x:Name="ActiveSpeaker" Text="{Binding ActiveSpeaker}"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>
