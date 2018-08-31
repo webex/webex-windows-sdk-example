@@ -14,7 +14,7 @@
                 <ResourceDictionary Source="../Resources/Styles.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="bool2VisibilityConverter"/>
-            <DataTemplate x:Key="RemoteAuxVideoViewTemplate">
+            <DataTemplate x:Key="AuxStreamViewTemplate">
                 <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding PersonName}" TextAlignment="Center"/>
                     <CheckBox Content="SendingVideo" IsChecked="{Binding IsSendingVideo, Mode=OneWay}" IsEnabled="False"/>
@@ -123,10 +123,10 @@
                         <wf:PictureBox x:Name="pbRemoteAux4" BackColor="White" SizeMode="Zoom"/>
                     </local:FixedAspectWinFormsHost>
 
-                    <UserControl x:Name="Aux1Contrl" Grid.Row="1" Grid.Column="1" ContentTemplate="{StaticResource RemoteAuxVideoViewTemplate}" Content="{Binding RemoteAuxVideoViews[0]}" Visibility="{Binding RemoteAuxVideoViews[0].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
-                    <UserControl x:Name="Aux2Contrl" Grid.Row="1" Grid.Column="2" ContentTemplate="{StaticResource RemoteAuxVideoViewTemplate}" Content="{Binding RemoteAuxVideoViews[1]}" Visibility="{Binding RemoteAuxVideoViews[1].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
-                    <UserControl x:Name="Aux3Contrl" Grid.Row="1" Grid.Column="3" ContentTemplate="{StaticResource RemoteAuxVideoViewTemplate}" Content="{Binding RemoteAuxVideoViews[2]}" Visibility="{Binding RemoteAuxVideoViews[2].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
-                    <UserControl x:Name="Aux4Contrl" Grid.Row="1" Grid.Column="4" ContentTemplate="{StaticResource RemoteAuxVideoViewTemplate}" Content="{Binding RemoteAuxVideoViews[3]}" Visibility="{Binding RemoteAuxVideoViews[3].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
+                    <UserControl x:Name="Aux1Contrl" Grid.Row="1" Grid.Column="1" ContentTemplate="{StaticResource AuxStreamViewTemplate}" Content="{Binding AuxStreamViews[0]}" Visibility="{Binding AuxStreamViews[0].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
+                    <UserControl x:Name="Aux2Contrl" Grid.Row="1" Grid.Column="2" ContentTemplate="{StaticResource AuxStreamViewTemplate}" Content="{Binding AuxStreamViews[1]}" Visibility="{Binding AuxStreamViews[1].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
+                    <UserControl x:Name="Aux3Contrl" Grid.Row="1" Grid.Column="3" ContentTemplate="{StaticResource AuxStreamViewTemplate}" Content="{Binding AuxStreamViews[2]}" Visibility="{Binding AuxStreamViews[2].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
+                    <UserControl x:Name="Aux4Contrl" Grid.Row="1" Grid.Column="4" ContentTemplate="{StaticResource AuxStreamViewTemplate}" Content="{Binding AuxStreamViews[3]}" Visibility="{Binding AuxStreamViews[3].IsShow, Converter={StaticResource bool2VisibilityConverter}}"></UserControl>
 
                     <StackPanel Grid.Row="2" Grid.ColumnSpan="6"  Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Active Speaker: "></TextBlock>

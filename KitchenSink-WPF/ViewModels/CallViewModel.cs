@@ -31,7 +31,7 @@ using System.Windows;
 
 namespace KitchenSink
 {
-    class CallViewModel : ViewModelBase
+    partial class CallViewModel : ViewModelBase
     {
         #region Fields
 
@@ -111,11 +111,11 @@ namespace KitchenSink
             }
         }
 
-        public RemoteAuxVideoView RemoteAux1VideoView { get; set; }
-        public RemoteAuxVideoView RemoteAux2VideoView { get; set; }
-        public RemoteAuxVideoView RemoteAux3VideoView { get; set; }
-        public RemoteAuxVideoView RemoteAux4VideoView { get; set; }
-        public ObservableCollection<RemoteAuxVideoView> RemoteAuxVideoViews { get; set; }
+        public AuxStreamView RemoteAux1VideoView { get; set; }
+        public AuxStreamView RemoteAux2VideoView { get; set; }
+        public AuxStreamView RemoteAux3VideoView { get; set; }
+        public AuxStreamView RemoteAux4VideoView { get; set; }
+        public ObservableCollection<AuxStreamView> AuxStreamViews { get; set; }
 
         private ObservableCollection<CallMembership> callMemberships;
         public ObservableCollection<CallMembership> CallMemberships
@@ -504,41 +504,41 @@ namespace KitchenSink
             StopShareCMD = new RelayCommand(StopShare);
             webex = ApplicationController.Instance.CurWebexManager.CurWebex;
             shareSourceList = new ObservableCollection<ShareSource>();
-            RemoteAuxVideoViews = new ObservableCollection<RemoteAuxVideoView>();
-            LoadRemoteAuxVideoViews();
+            AuxStreamViews = new ObservableCollection<AuxStreamView>();
+            LoadAuxStreamViews();
         }
 
-        void LoadRemoteAuxVideoViews()
+        void LoadAuxStreamViews()
         {
-            RemoteAuxVideoViews.Clear();
+            AuxStreamViews.Clear();
 
-            RemoteAux1VideoView = new RemoteAuxVideoView()
+            RemoteAux1VideoView = new AuxStreamView()
             {
                 Name = "RemoteVideoViewAux1",
                 Handle = curCallView.RemoteAux1Handle,
             };
-            RemoteAuxVideoViews.Add(RemoteAux1VideoView);
+            AuxStreamViews.Add(RemoteAux1VideoView);
 
-            RemoteAux2VideoView = new RemoteAuxVideoView()
+            RemoteAux2VideoView = new AuxStreamView()
             {
                 Name = "RemoteVideoViewAux2",
                 Handle = curCallView.RemoteAux2Handle,
             };
-            RemoteAuxVideoViews.Add(RemoteAux2VideoView);
+            AuxStreamViews.Add(RemoteAux2VideoView);
 
-            RemoteAux3VideoView = new RemoteAuxVideoView()
+            RemoteAux3VideoView = new AuxStreamView()
             {
                 Name = "RemoteVideoViewAux3",
                 Handle = curCallView.RemoteAux3Handle,
             };
-            RemoteAuxVideoViews.Add(RemoteAux3VideoView);
+            AuxStreamViews.Add(RemoteAux3VideoView);
 
-            RemoteAux4VideoView = new RemoteAuxVideoView()
+            RemoteAux4VideoView = new AuxStreamView()
             {
                 Name = "RemoteVideoViewAux4",
                 Handle = curCallView.RemoteAux4Handle,
             };
-            RemoteAuxVideoViews.Add(RemoteAux4VideoView);
+            AuxStreamViews.Add(RemoteAux4VideoView);
         }
 
         #region method
@@ -637,21 +637,21 @@ namespace KitchenSink
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var item in currentCall.RemoteAuxVideos)
+                foreach (var item in currentCall.AuxStreams)
                 {
                     item.RefreshView();
                 }
             });
         }
-        public void UpdateRemoteAuxVideoView(RemoteAuxVideo remoteAuxVideo)
+        public void UpdateAuxStreamView(AuxStream AuxStream)
         {
-            if (currentCall == null && remoteAuxVideo == null)
+            if (currentCall == null && AuxStream == null)
             {
                 return;
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                remoteAuxVideo.RefreshView();
+                AuxStream.RefreshView();
             });
         }
 
@@ -715,7 +715,6 @@ namespace KitchenSink
         #endregion
 
         #region CallEvents
-
         private void RegisterCallEvent()
         {
             if (currentCall == null)
@@ -733,7 +732,8 @@ namespace KitchenSink
             currentCall.OnCapabilitiesChanged += CurrentCall_onCapabilitiesChanged;
 
             currentCall.OnCallMembershipChanged += CurrentCall_onCallMembershipChanged;
-            
+
+            RegisterMultiStream();
         }
 
         private void UnRegisterCallEvent()
@@ -769,7 +769,7 @@ namespace KitchenSink
             RefreshCallStatusView();
             UpdateRecentContactsStore();
             UnRegisterCallEvent();
-            Output("call is disconnectd for " + reason?.GetType().Name);
+            Output("call is disconnected for " + reason?.GetType().Name);
             this.curCallView.RefreshViews();
 #pragma warning disable S125 // Sections of code should not be "commented out"
             //this.IfShowRatingView = true;
@@ -921,30 +921,6 @@ namespace KitchenSink
             {
                 Output($"SpeakerSwitchedEvent: switch speaker to {speakerSwitchedEvent.Speaker.Name}");
             }
-            else if (mediaChgEvent is RemoteAuxVideoPersonChangedEvent videoPersonChanged)
-            {
-                curCallView.RefreshViews();
-                var remoteAuxVideo = videoPersonChanged.RemoteAuxVideo;
-
-                var find = RemoteAuxVideoViews.First(x => x.Handle == remoteAuxVideo.Handle);
-                if (videoPersonChanged.ToPerson != null)
-                {
-                    find.IsShow = true;
-                    ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(videoPersonChanged.ToPerson.PersonId, r =>
-                    {
-                        if (r.IsSuccess)
-                        {
-                            find.PersonName = r.Data.DisplayName;
-                        }
-                    });
-                    Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to {videoPersonChanged?.ToPerson?.Email}");
-                }
-                else
-                {
-                    find.IsShow = false;
-                    Output($"RemoteAuxVideoPersonChangedEvent: {find.Name} is changed to null.");
-                }
-            }
             else if (mediaChgEvent is ActiveSpeakerChangedEvent activeSpeakerChanged)
             {
                 if(activeSpeakerChanged.ToPerson != null)
@@ -964,60 +940,6 @@ namespace KitchenSink
                     IfShowRemoteView = false;
                     ActiveSpeaker = null;
                     Output($"ActiveSpeakerChangedEvent: active speaker is changed to null");
-                }
-            }
-            else if (mediaChgEvent is RemoteAuxVideoSizeChangedEvent auxViewSizeChanged)
-            {
-                var viewSize = auxViewSizeChanged.RemoteAuxVideo.RemoteAuxVideoSize;
-                var index = currentCall.RemoteAuxVideos.IndexOf(auxViewSizeChanged.RemoteAuxVideo);
-                Output($"RemoteAuxVideoSizeChangedEvent: remote aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
-            }
-            else if (mediaChgEvent is RemoteAuxVideosCountChangedEvent remoteVideosCountChanged)
-            {
-                Output($"RemoteAuxVideosCountChangedEvent: remote videos count changes to: {remoteVideosCountChanged.Count}");
-                int idx = 0;
-                foreach (var item in RemoteAuxVideoViews)
-                {
-                    if (item.AuxVideo == null && idx < remoteVideosCountChanged.Count)
-                    {
-                        item.IsShow = true;
-                        item.AuxVideo = currentCall.SubscribeRemoteAuxVideo(item.Handle);
-                        Output($"Subscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
-                    }
-                    else if (item.AuxVideo != null && idx >= remoteVideosCountChanged.Count)
-                    {
-                        currentCall.UnsubscribeRemoteAuxVideo(item.AuxVideo);
-                        item.AuxVideo = null;
-                        item.IsShow = false;
-                        curCallView.UpdateAvarta(item.Handle, null);
-                        Output($"Unsubscribe Auxiliary Remote Video [{RemoteAuxVideoViews.IndexOf(item)}]");
-                    }
-                    idx++;
-                }
-            }
-            else if (mediaChgEvent is RemoteAuxSendingVideoEvent remoteAuxSendingVideo)
-            {
-                var index = currentCall.RemoteAuxVideos.IndexOf(remoteAuxSendingVideo.RemoteAuxVideo);
-                Output($"RemoteAuxSendingVideoEvent: remote aux[{index}] IsSendingVideo[{remoteAuxSendingVideo.RemoteAuxVideo.IsSendingVideo}]");
-                var remoteAuxVideo = remoteAuxSendingVideo.RemoteAuxVideo;
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var find = RemoteAuxVideoViews.First(x => x.Handle == remoteAuxVideo.Handle);
-                    find.IsSendingVideo = remoteAuxVideo.IsSendingVideo;
-                });
-
-                if (remoteAuxVideo.IsSendingVideo)
-                {
-                    UpdateRemoteAuxVideoView(remoteAuxVideo);
-                }
-                else
-                {
-                    //show avatar or spinning circle
-                    if(remoteAuxVideo.Person != null)
-                    {
-                        ShowAvartar(remoteAuxVideo.Handle, remoteAuxVideo.Person.PersonId);
-                    }
                 }
             }
         }
@@ -1113,11 +1035,12 @@ namespace KitchenSink
     }
     
 
-    public class RemoteAuxVideoView: ViewModelBase
+    public class AuxStreamView: ViewModelBase
     {
         public string Name { get; set; }
         public IntPtr Handle { get; set; }
-        public RemoteAuxVideo AuxVideo { get; set; }
+        public bool IsInUse { get; set; }
+        public AuxStream AuxVideo { get; set; }
 
         private bool isShow = false;
         public bool IsShow
@@ -1164,18 +1087,16 @@ namespace KitchenSink
             }
         }
 
+        private bool isSendingVideo;
         public bool IsSendingVideo
         {
             get
             {
-                if (AuxVideo != null)
-                {
-                    return AuxVideo.IsSendingVideo;
-                }
-                return false;
+                return this.isSendingVideo;
             }
             set
             {
+                isSendingVideo = value;
                 OnPropertyChanged("IsSendingVideo");
             }
         }
