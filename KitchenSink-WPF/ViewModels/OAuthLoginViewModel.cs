@@ -43,8 +43,7 @@ namespace KitchenSink
         {
             get
             {
-                OAuthAuthenticator auth = ApplicationController.Instance.CurWebexManager.CurAuthenticator as OAuthAuthenticator;
-                if (auth != null)
+                if (ApplicationController.Instance.CurWebexManager.CurAuthenticator is OAuthAuthenticator auth)
                 {
                     Output($"AuthorizationUrl: {auth.AuthorizationUrl}");
                     return auth.AuthorizationUrl;

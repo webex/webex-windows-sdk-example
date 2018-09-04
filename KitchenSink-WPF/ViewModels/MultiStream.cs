@@ -50,31 +50,21 @@ namespace KitchenSink
                 return IntPtr.Zero;
             }
             idleView.IsInUse = true;
+            // SDK will open this auxiliary stream with this view and the result will be notified by AuxStreamOpenedEvent.
             return idleView.Handle;
         }
 
         public IntPtr OnAuxStreamUnAvailable()
         {
             Output($"OnAuxStreamUnAvailable, Total Count:{currentCall.AvailableAuxStreamCount}");
-            int InUseAuxViewCount = 0;
-            foreach (var item in AuxStreamViews)
-            {
-                if (item.IsInUse)
-                {
-                    InUseAuxViewCount++;
-                }
-                if (InUseAuxViewCount > currentCall.AvailableAuxStreamCount)
-                {
-                    item.IsInUse = false;
-                    return item.Handle;
-                }
-            }
+            // You can indicate to close which view or let SDK automatically close the last opened view.
+            // The result will be notified by AuxStreamClosedEvent.
             return IntPtr.Zero;
         }
-        public void OnAuxStreamEvent(AuxStreamEvent e)
+        public void OnAuxStreamEvent(AuxStreamEvent auxStreamEvent)
         {
 
-            if (e is AuxStreamOpenedEvent auxStreamOpenedEvent)
+            if (auxStreamEvent is AuxStreamOpenedEvent auxStreamOpenedEvent)
             {
                 var handle = auxStreamOpenedEvent.Result.Data;
                 var view = AuxStreamViews.FirstOrDefault(x => x.Handle == handle);
@@ -82,6 +72,7 @@ namespace KitchenSink
                 {
                     if (auxStreamOpenedEvent.Result.IsSuccess)
                     {
+                        // Display this view.
                         view.IsInUse = true;
                         view.IsShow = true;
                         Output($"AuxStreamOpenedEvent: {view.Name}");
@@ -93,7 +84,7 @@ namespace KitchenSink
                     }
                 }
             }
-            else if (e is AuxStreamClosedEvent auxStreamClosedEvent)
+            else if (auxStreamEvent is AuxStreamClosedEvent auxStreamClosedEvent)
             {
                 var handle = auxStreamClosedEvent.Result.Data;
                 var view = AuxStreamViews.FirstOrDefault(x => x.Handle == handle);
@@ -101,6 +92,7 @@ namespace KitchenSink
                 {
                     if (auxStreamClosedEvent.Result.IsSuccess)
                     {
+                        // Hide this view.
                         view.IsInUse = false;
                         view.IsShow = false;
                         Output($"AuxStreamClosedEvent: {view.Name}");
@@ -112,9 +104,8 @@ namespace KitchenSink
                     }
                 }
             }
-            else if (e is AuxStreamPersonChangedEvent personChangedEvent)
+            else if (auxStreamEvent is AuxStreamPersonChangedEvent personChangedEvent)
             {
-                //curCallView.RefreshViews();
                 var auxStream = personChangedEvent.AuxStream;
 
                 var find = AuxStreamViews.FirstOrDefault(x => x.Handle == auxStream.Handle);
@@ -134,13 +125,13 @@ namespace KitchenSink
                     Output($"AuxStreamPersonChangedEvent: {find.Name} is changed to null.");
                 }
             }
-            else if (e is AuxStreamSizeChangedEvent auxViewSizeChanged)
+            else if (auxStreamEvent is AuxStreamSizeChangedEvent auxViewSizeChanged)
             {
                 var viewSize = auxViewSizeChanged.AuxStream.AuxStreamSize;
                 var index = currentCall.AuxStreams.IndexOf(auxViewSizeChanged.AuxStream);
                 Output($"AuxStreamSizeChangedEvent: aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
             }
-            else if (e is AuxStreamSendingEvent auxStreamSending)
+            else if (auxStreamEvent is AuxStreamSendingVideoEvent auxStreamSending)
             {
                 var index = currentCall.AuxStreams.IndexOf(auxStreamSending.AuxStream);
                 Output($"AuxStreamSendingEvent: aux[{index}] IsSendingVideo[{auxStreamSending.AuxStream.IsSendingVideo}]");
