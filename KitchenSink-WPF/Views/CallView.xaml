@@ -26,7 +26,7 @@
     <Grid>
         <DockPanel LastChildFill="True">
             <DockPanel LastChildFill="True" DockPanel.Dock="Top" Height="18" VerticalAlignment="Top">
-                <Button DockPanel.Dock="Left" x:Name="Back"  Content="Back" Grid.Row="0" Width="50" Height="20" HorizontalAlignment="Left" Command="{Binding BackCommand}" />
+                <Button DockPanel.Dock="Left" x:Name="Back"  Content="Back" Grid.Row="0" Width="50" Height="20" HorizontalAlignment="Left" Command="{Binding BackCommand}" Visibility="Hidden"/>
                 <TextBlock Text="{Binding CallStatus}" TextAlignment="Center"/>
             </DockPanel>
             <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Width="266">

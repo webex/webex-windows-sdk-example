@@ -111,6 +111,8 @@ namespace KitchenSink
                 var find = AuxStreamViews.FirstOrDefault(x => x.Handle == auxStream.Handle);
                 if (personChangedEvent.ToPerson != null)
                 {
+                    ShowAvartar(find.Handle, personChangedEvent.ToPerson.PersonId);
+
                     ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(personChangedEvent.ToPerson.PersonId, r =>
                     {
                         if (r.IsSuccess)

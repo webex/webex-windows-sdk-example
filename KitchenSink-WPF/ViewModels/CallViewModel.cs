@@ -770,13 +770,13 @@ namespace KitchenSink
             UpdateRecentContactsStore();
             UnRegisterCallEvent();
             Output("call is disconnected for " + reason?.GetType().Name);
-            this.curCallView.RefreshViews();
 #pragma warning disable S125 // Sections of code should not be "commented out"
             //this.IfShowRatingView = true;
 #pragma warning restore S125 // Sections of code should not be "commented out"
             currentCall = null;
 
             ApplicationController.Instance.CurWebexManager.CurCalleeAddress = null;
+            ApplicationController.Instance.ChangeState(State.Main);
         }
 
         private void CurrentCall_onCallMembershipChanged(CallMembershipChangedEvent obj)
@@ -926,6 +926,10 @@ namespace KitchenSink
                 if(activeSpeakerChanged.ToPerson != null)
                 {
                     IfShowRemoteView = true;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ShowAvartar(curCallView.RemoteViewHandle, activeSpeakerChanged.ToPerson.PersonId);
+                    });
                     ApplicationController.Instance.CurWebexManager.CurWebex.People.Get(activeSpeakerChanged.ToPerson.PersonId, r =>
                     {
                         if (r.IsSuccess)
