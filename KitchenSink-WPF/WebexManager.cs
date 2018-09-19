@@ -51,7 +51,7 @@ namespace KitchenSink
                 RecentContacts = new RecentContacts();
             }
         }
-        public Call currentCall { get; set; }
+        public Call CurrentCall { get; set; }
         public RecentContacts RecentContacts { get; set; }
 
 

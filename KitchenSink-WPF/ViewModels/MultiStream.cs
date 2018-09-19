@@ -34,16 +34,16 @@ namespace KitchenSink
     {
         private void RegisterMultiStream()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
-            currentCall.MultiStreamObserver = this;
+            CurrentCall.MultiStreamObserver = this;
         }
 
         public IntPtr OnAuxStreamAvailable()
         {
-            Output($"OnAuxStreamAvailable, Total Count:{currentCall.AvailableAuxStreamCount}");
+            Output($"OnAuxStreamAvailable, Total Count:{CurrentCall.AvailableAuxStreamCount}");
             var idleView = AuxStreamViews.FirstOrDefault(x => !x.IsInUse);
             if (idleView == null)
             {
@@ -56,7 +56,7 @@ namespace KitchenSink
 
         public IntPtr OnAuxStreamUnAvailable()
         {
-            Output($"OnAuxStreamUnAvailable, Total Count:{currentCall.AvailableAuxStreamCount}");
+            Output($"OnAuxStreamUnAvailable, Total Count:{CurrentCall.AvailableAuxStreamCount}");
             // You can indicate to close which view or let SDK automatically close the last opened view.
             // The result will be notified by AuxStreamClosedEvent.
             return IntPtr.Zero;
@@ -130,12 +130,12 @@ namespace KitchenSink
             else if (auxStreamEvent is AuxStreamSizeChangedEvent auxViewSizeChanged)
             {
                 var viewSize = auxViewSizeChanged.AuxStream.AuxStreamSize;
-                var index = currentCall.AuxStreams.IndexOf(auxViewSizeChanged.AuxStream);
+                var index = CurrentCall.AuxStreams.IndexOf(auxViewSizeChanged.AuxStream);
                 Output($"AuxStreamSizeChangedEvent: aux[{index}] view size changes to width[{viewSize.Width}] height[{viewSize.Height}]");
             }
             else if (auxStreamEvent is AuxStreamSendingVideoEvent auxStreamSending)
             {
-                var index = currentCall.AuxStreams.IndexOf(auxStreamSending.AuxStream);
+                var index = CurrentCall.AuxStreams.IndexOf(auxStreamSending.AuxStream);
                 Output($"AuxStreamSendingEvent: aux[{index}] IsSendingVideo[{auxStreamSending.AuxStream.IsSendingVideo}]");
                 var auxStream = auxStreamSending.AuxStream;
 

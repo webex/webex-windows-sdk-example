@@ -36,15 +36,15 @@ namespace KitchenSink
         #region Fields
 
         readonly WebexSDK.Webex webex;
-        WebexSDK.Call currentCall
+        WebexSDK.Call CurrentCall
         {
             get
             {
-                return ApplicationController.Instance.CurWebexManager.currentCall;
+                return ApplicationController.Instance.CurWebexManager.CurrentCall;
             }
             set
             {
-                ApplicationController.Instance.CurWebexManager.currentCall = value;
+                ApplicationController.Instance.CurWebexManager.CurrentCall = value;
             }
         }
         readonly CallView curCallView;
@@ -134,9 +134,9 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsRemoteSendingVideo;
+                    return this.CurrentCall.IsRemoteSendingVideo;
                 }
                 return false;
             }
@@ -145,9 +145,9 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsRemoteSendingAudio;
+                    return this.CurrentCall.IsRemoteSendingAudio;
                 }
                 return false;
             }
@@ -157,17 +157,17 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsSendingAudio;
+                    return this.CurrentCall.IsSendingAudio;
                 }
                 return false;
             }
             set
             {
-                if (this.currentCall != null && value != this.currentCall.IsSendingAudio)
+                if (this.CurrentCall != null && value != this.CurrentCall.IsSendingAudio)
                 {
-                    this.currentCall.IsSendingAudio = value;
+                    this.CurrentCall.IsSendingAudio = value;
                     OnPropertyChanged("IfSendAudio");
                 }
             }
@@ -177,17 +177,17 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsSendingVideo;
+                    return this.CurrentCall.IsSendingVideo;
                 }
                 return false;
             }
             set
             {
-                if (this.currentCall != null && value != this.currentCall.IsSendingVideo)
+                if (this.CurrentCall != null && value != this.CurrentCall.IsSendingVideo)
                 {
-                    this.currentCall.IsSendingVideo = value;
+                    this.CurrentCall.IsSendingVideo = value;
                     OnPropertyChanged("IfSendVedio");
                 }                
             }
@@ -197,17 +197,17 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsReceivingVideo;
+                    return this.CurrentCall.IsReceivingVideo;
                 }
                 return false;
             }
             set
             {
-                if (this.currentCall != null && value != this.currentCall.IsReceivingVideo)
+                if (this.CurrentCall != null && value != this.CurrentCall.IsReceivingVideo)
                 {
-                    this.currentCall.IsReceivingVideo = value;
+                    this.CurrentCall.IsReceivingVideo = value;
                     OnPropertyChanged("IfReceiveVedio");
                 }
             }
@@ -217,17 +217,17 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return this.currentCall.IsReceivingAudio;
+                    return this.CurrentCall.IsReceivingAudio;
                 }
                 return false;
             }
             set
             {
-                if (this.currentCall != null&&value != this.currentCall.IsReceivingAudio)
+                if (this.CurrentCall != null&&value != this.CurrentCall.IsReceivingAudio)
                 {
-                    this.currentCall.IsReceivingAudio = value;
+                    this.CurrentCall.IsReceivingAudio = value;
                     OnPropertyChanged("IfReceiveAudio");
                 }
             }
@@ -250,9 +250,9 @@ namespace KitchenSink
         {
             get
             {
-                if (this.currentCall != null)
+                if (this.CurrentCall != null)
                 {
-                    return "Call Status: " + this.currentCall.Status.ToString();
+                    return "Call Status: " + this.CurrentCall.Status.ToString();
                 }
                 return null;
             }
@@ -312,7 +312,7 @@ namespace KitchenSink
                 this.selectedSource = value;
                 if (this.selectedSource != null)
                 {
-                    this.currentCall.StartShare(this.selectedSource.SourceId, r =>
+                    this.CurrentCall.StartShare(this.selectedSource.SourceId, r =>
                     {
                         if (!r.IsSuccess)
                         {
@@ -327,9 +327,9 @@ namespace KitchenSink
         public void FetchShareSources()
         {
             ShareSourceList.Clear();
-            if (this.currentCall != null)
+            if (this.CurrentCall != null)
             {
-                this.currentCall.FetchShareSources(ShareSourceType.Desktop, result =>
+                this.CurrentCall.FetchShareSources(ShareSourceType.Desktop, result =>
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -342,7 +342,7 @@ namespace KitchenSink
 
                 });
 
-                this.currentCall.FetchShareSources(ShareSourceType.Application, r =>
+                this.CurrentCall.FetchShareSources(ShareSourceType.Application, r =>
                 {
                     if (r.IsSuccess)
                     {
@@ -361,17 +361,17 @@ namespace KitchenSink
 
         private void StopShare(object o)
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
 
-            if (!currentCall.IsSendingShare)
+            if (!CurrentCall.IsSendingShare)
             {
                 return;
             }
 
-            currentCall.StopShare(r=>
+            CurrentCall.StopShare(r=>
             {
                 if (r.IsSuccess)
                 {
@@ -549,7 +549,7 @@ namespace KitchenSink
             {
                 if (result.IsSuccess)
                 {
-                    currentCall = result.Data;
+                    CurrentCall = result.Data;
 
                     RegisterCallEvent();
                     this.curCallView.RefreshViews();
@@ -563,12 +563,12 @@ namespace KitchenSink
 
         public void Answer()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             RegisterCallEvent();
-            currentCall.Answer(MediaOption.AudioVideoShare(curCallView.LocalViewHandle, curCallView.RemoteViewHandle, curCallView.RemoteShareViewHandle), result =>
+            CurrentCall.Answer(MediaOption.AudioVideoShare(curCallView.LocalViewHandle, curCallView.RemoteViewHandle, curCallView.RemoteShareViewHandle), result =>
             {
                 if (!result.IsSuccess)
                 {
@@ -578,12 +578,12 @@ namespace KitchenSink
         }
         public void Reject()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             RegisterCallEvent();
-            currentCall.Reject(result =>
+            CurrentCall.Reject(result =>
             {
                 if (!result.IsSuccess)
                 {
@@ -594,9 +594,9 @@ namespace KitchenSink
 
         private void EndCall(object o)
         {
-            if (this.currentCall != null)
+            if (this.CurrentCall != null)
             {
-                currentCall.Hangup(result =>
+                CurrentCall.Hangup(result =>
                 {
                     if (!result.IsSuccess)
                     {
@@ -608,36 +608,36 @@ namespace KitchenSink
         }
         public void UpdateLocalVideoView()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.RefreshLocalView(curCallView.LocalViewHandle);
+                CurrentCall.RefreshLocalView(curCallView.LocalViewHandle);
             });
         }
         public void UpdateRemoteVideoView()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.RefreshRemoteView(curCallView.RemoteViewHandle);
+                CurrentCall.RefreshRemoteView(curCallView.RemoteViewHandle);
             });
         }
         public void UpdateRemoteAllAuxVideoView()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var item in currentCall.AuxStreams)
+                foreach (var item in CurrentCall.AuxStreams)
                 {
                     item.RefreshView();
                 }
@@ -645,7 +645,7 @@ namespace KitchenSink
         }
         public void UpdateAuxStreamView(AuxStream AuxStream)
         {
-            if (currentCall == null && AuxStream == null)
+            if (CurrentCall == null && AuxStream == null)
             {
                 return;
             }
@@ -657,14 +657,14 @@ namespace KitchenSink
 
         public void UpdateRemoteShareVideoView()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
             
             Application.Current.Dispatcher.Invoke(() =>
             {
-                currentCall.RefreshRemoteShareView(curCallView.RemoteShareViewHandle);
+                CurrentCall.RefreshRemoteShareView(curCallView.RemoteShareViewHandle);
             });
         }
 
@@ -689,20 +689,20 @@ namespace KitchenSink
 
         private void UpdateRecentContactsStore()
         {
-            if (currentCall == null
-                || currentCall.To == null
-                || currentCall.From == null)
+            if (CurrentCall == null
+                || CurrentCall.To == null
+                || CurrentCall.From == null)
             {
                 return;
             }
 
-            if (currentCall.Direction == Call.CallDirection.Outgoing)
+            if (CurrentCall.Direction == Call.CallDirection.Outgoing)
             {
-                ApplicationController.Instance.CurWebexManager?.RecentContacts?.AddRecentContactsStore(currentCall.To.PersonId);
+                ApplicationController.Instance.CurWebexManager?.RecentContacts?.AddRecentContactsStore(CurrentCall.To.PersonId);
             }
             else
             {
-                ApplicationController.Instance.CurWebexManager.RecentContacts.AddRecentContactsStore(currentCall.From.PersonId);
+                ApplicationController.Instance.CurWebexManager.RecentContacts.AddRecentContactsStore(CurrentCall.From.PersonId);
             }
         }
 
@@ -717,42 +717,42 @@ namespace KitchenSink
         #region CallEvents
         private void RegisterCallEvent()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
-            currentCall.OnRinging += CurrentCall_onRinging;
+            CurrentCall.OnRinging += CurrentCall_onRinging;
 
-            currentCall.OnConnected += CurrentCall_onConnected;
+            CurrentCall.OnConnected += CurrentCall_onConnected;
 
-            currentCall.OnDisconnected += CurrentCall_onDisconnected;
+            CurrentCall.OnDisconnected += CurrentCall_onDisconnected;
 
-            currentCall.OnMediaChanged += CurrentCall_onMediaChanged;
+            CurrentCall.OnMediaChanged += CurrentCall_onMediaChanged;
 
-            currentCall.OnCapabilitiesChanged += CurrentCall_onCapabilitiesChanged;
+            CurrentCall.OnCapabilitiesChanged += CurrentCall_onCapabilitiesChanged;
 
-            currentCall.OnCallMembershipChanged += CurrentCall_onCallMembershipChanged;
+            CurrentCall.OnCallMembershipChanged += CurrentCall_onCallMembershipChanged;
 
             RegisterMultiStream();
         }
 
         private void UnRegisterCallEvent()
         {
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
-            currentCall.OnRinging -= CurrentCall_onRinging;
+            CurrentCall.OnRinging -= CurrentCall_onRinging;
 
-            currentCall.OnConnected -= CurrentCall_onConnected;
+            CurrentCall.OnConnected -= CurrentCall_onConnected;
 
-            currentCall.OnDisconnected -= CurrentCall_onDisconnected;
+            CurrentCall.OnDisconnected -= CurrentCall_onDisconnected;
 
-            currentCall.OnMediaChanged -= CurrentCall_onMediaChanged;
+            CurrentCall.OnMediaChanged -= CurrentCall_onMediaChanged;
 
-            currentCall.OnCapabilitiesChanged -= CurrentCall_onCapabilitiesChanged;
+            CurrentCall.OnCapabilitiesChanged -= CurrentCall_onCapabilitiesChanged;
 
-            currentCall.OnCallMembershipChanged -= CurrentCall_onCallMembershipChanged;
+            CurrentCall.OnCallMembershipChanged -= CurrentCall_onCallMembershipChanged;
         }
 
         private void CurrentCall_onRinging(WebexSDK.Call call)
@@ -773,7 +773,7 @@ namespace KitchenSink
 #pragma warning disable S125 // Sections of code should not be "commented out"
             //this.IfShowRatingView = true;
 #pragma warning restore S125 // Sections of code should not be "commented out"
-            currentCall = null;
+            CurrentCall = null;
 
             ApplicationController.Instance.CurWebexManager.CurCalleeAddress = null;
             ApplicationController.Instance.ChangeState(State.Main);
@@ -781,7 +781,7 @@ namespace KitchenSink
 
         private void CurrentCall_onCallMembershipChanged(CallMembershipChangedEvent obj)
         {
-            CallMemberships = new ObservableCollection<CallMembership>(currentCall?.Memberships);
+            CallMemberships = new ObservableCollection<CallMembership>(CurrentCall?.Memberships);
 
             if (obj is CallMembershipJoinedEvent)
             {
@@ -863,11 +863,11 @@ namespace KitchenSink
                 else
                 {
                     //show avatar or spinning circle
-                    if(currentCall.ActiveSpeaker != null)
+                    if(CurrentCall.ActiveSpeaker != null)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            ShowAvartar(curCallView.RemoteViewHandle, currentCall?.ActiveSpeaker?.PersonId);
+                            ShowAvartar(curCallView.RemoteViewHandle, CurrentCall?.ActiveSpeaker?.PersonId);
                         });
                     }
                 }
@@ -994,7 +994,7 @@ namespace KitchenSink
         private void SendFeedBack(object o)
         {
             this.IfShowRatingView = false;
-            currentCall?.SendFeedbackWith(this.RatingValue, this.Comment, this.IfIncludeLog);
+            CurrentCall?.SendFeedbackWith(this.RatingValue, this.Comment, this.IfIncludeLog);
         }
         #endregion
 
@@ -1014,16 +1014,16 @@ namespace KitchenSink
                 return;
             }
             InputKey += key;
-            if (currentCall == null)
+            if (CurrentCall == null)
             {
                 return;
             }
-            if (!currentCall.IsSendingDTMFEnabled)
+            if (!CurrentCall.IsSendingDTMFEnabled)
             {
                 Output("Current call not support sending DTMF.");
                 return;
             }
-            currentCall.SendDtmf(key, r =>
+            CurrentCall.SendDtmf(key, r =>
             {
                 if (r.IsSuccess)
                 {

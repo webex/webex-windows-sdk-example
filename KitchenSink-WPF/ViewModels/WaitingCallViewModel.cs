@@ -90,7 +90,7 @@ namespace KitchenSink
         {
             IsIncomingCall = true;
             IsNoCall = false;
-            ApplicationController.Instance.CurWebexManager.currentCall = obj;
+            ApplicationController.Instance.CurWebexManager.CurrentCall = obj;
             currentCall = obj;
             currentCall.OnCallMembershipChanged += CurrentCall_onCallMembershipChanged;
         }
@@ -103,7 +103,7 @@ namespace KitchenSink
 
         private void FetchCaller()
         {
-            CallMembership from = ApplicationController.Instance.CurWebexManager.currentCall.From;
+            CallMembership from = ApplicationController.Instance.CurWebexManager.CurrentCall.From;
             var webex = ApplicationController.Instance.CurWebexManager.CurWebex;
             webex?.People.Get(from?.PersonId, r =>
             {
@@ -117,13 +117,13 @@ namespace KitchenSink
 
         private void DeclineCall(object o)
         {
-            unRegistEvent();
+            UnRegistEvent();
             ApplicationController.Instance.ChangeViewCmd = ChangeViewCmd.CallViewDecline;
             ApplicationController.Instance.ChangeState(State.Call);
         }
         private void AnswerCall(object o)
         {
-            unRegistEvent();
+            UnRegistEvent();
             ApplicationController.Instance.ChangeViewCmd = ChangeViewCmd.CallViewAnswer;
             ApplicationController.Instance.ChangeState(State.Call);
         }
@@ -133,7 +133,7 @@ namespace KitchenSink
             return true;
         }
 
-        private void unRegistEvent()
+        private void UnRegistEvent()
         {
             var webex = ApplicationController.Instance.CurWebexManager.CurWebex;
             if (webex != null)
