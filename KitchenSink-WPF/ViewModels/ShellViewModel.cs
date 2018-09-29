@@ -93,7 +93,7 @@ namespace KitchenSink
         }
         public void Output(string format, params object[] args)
         {
-            AppLogOutput += string.Format("{0,-22}", $"{DateTime.UtcNow}") + string.Format(format, args) + "\n";
+            AppLogOutput += string.Format("{0,-25}", $"{DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")}") + string.Format(format, args) + "\n";
         }
 
         public void ShowUserInfo(string info)
