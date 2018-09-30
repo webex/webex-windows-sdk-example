@@ -14,7 +14,7 @@ bin\nuget.exe restore solutions\KitchenSink\KitchenSink.sln -NonInteractive
 REM clear NuGet package cache
 bin\nuget.exe locals all -clear
 
-set SDKNuGetPackage=2.0.0-EFT02
+set SDKNuGetPackage=2.0.0-EFT03
 echo SDKNuGetPackage is %SDKNuGetPackage%
 
 echo remove old Cisco.Webex.WindowsSDK.%SDKNuGetPackage%
